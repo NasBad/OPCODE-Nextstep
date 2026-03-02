@@ -1,16 +1,24 @@
+// src/App.jsx
+import { useEffect, useState } from "react";
+import AppShell from "./AppShell";
 import Dashboard from "./pages/Dashboard";
 
 export default function App() {
+  const [theme, setTheme] = useState("light");
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
   return (
-    <div
-      style={{
-        padding: 24,
-        backgroundColor: "#f4f6f8",
-        minHeight: "100vh",
-      }}
+    <AppShell
+      searchValue={query}
+      onSearchChange={setQuery}
+      onToggleTheme={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+      theme={theme}
     >
-      <h1 style={{ color: "#111", marginBottom: 20 }}>NextStep</h1>
-      <Dashboard />
-    </div>
+      <Dashboard searchQuery={query} />
+    </AppShell>
   );
 }
