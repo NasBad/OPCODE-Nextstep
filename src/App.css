@@ -1,5 +1,15 @@
+html,
+body,
 #root {
   width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #f6f7fb; /* same as your page bg */
+}
+
+body {
+  overflow-x: hidden; /* prevents showing background due to horizontal overflow */
 }
 
 .logo {
