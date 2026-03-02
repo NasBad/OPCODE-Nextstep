@@ -3,18 +3,10 @@ import { STATUSES } from "../constants/statuses";
 import StatusColumn from "../components/StatusColumn/StatusColumn";
 import { jobsMock } from "../data/jobsMock";
 import AddJobModal from "../components/AddJobModal/AddJobModal";
-<<<<<<< HEAD
-=======
 import { useToast } from "../components/Toast/ToastContext";
->>>>>>> feature/kanban-board
 
 export default function Dashboard({ searchQuery = "" }) {
   const [jobs, setJobs] = useState(jobsMock);
-<<<<<<< HEAD
-  const [isAddOpen, setIsAddOpen] = useState(false);
-
-  const moveNext = (jobId) => {
-=======
   const { addToast } = useToast();
 
   // Modal state
@@ -28,13 +20,13 @@ export default function Dashboard({ searchQuery = "" }) {
 
     return jobs.filter((j) => {
       const tags = Array.isArray(j.tags) ? j.tags.join(" ") : "";
-      const text = `${j.jobTitle} ${j.companyName} ${j.location ?? ""} ${
-        j.workType ?? ""
-      } ${tags}`.toLowerCase();
+      const text =
+        `${j.jobTitle} ${j.companyName} ${j.location ?? ""} ${j.workType ?? ""} ${tags}`.toLowerCase();
       return text.includes(q);
     });
   }, [jobs, searchQuery]);
 
+  // Group jobs by status
   const jobsByStatus = useMemo(() => {
     const map = {};
     STATUSES.forEach((s) => (map[s] = []));
@@ -46,6 +38,7 @@ export default function Dashboard({ searchQuery = "" }) {
     return map;
   }, [filteredJobs]);
 
+  // ✅ Add job into selected column (from the + button)
   const addJob = (newJob) => {
     const jobWithStatus = {
       ...newJob,
@@ -53,6 +46,7 @@ export default function Dashboard({ searchQuery = "" }) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+
     setJobs((prev) => [jobWithStatus, ...prev]);
     addToast("success", "Success", `Added to ${addStatus}`);
   };
@@ -71,7 +65,6 @@ export default function Dashboard({ searchQuery = "" }) {
       return;
     }
 
->>>>>>> feature/kanban-board
     setJobs((prev) =>
       prev.map((j) =>
         j.id === jobId
@@ -84,66 +77,11 @@ export default function Dashboard({ searchQuery = "" }) {
   };
 
   const editJob = (job) => {
+    addToast("warning", "Warning", "Edit modal not implemented yet");
     alert(`Edit clicked for: ${job.jobTitle} @ ${job.companyName}`);
   };
 
-  const addJob = (newJob) => {
-    setJobs((prev) => [newJob, ...prev]);
-  };
-
   return (
-<<<<<<< HEAD
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginBottom: 12,
-        }}
-      >
-        <button
-          onClick={() => setIsAddOpen(true)}
-          style={{
-            border: "1px solid #1a73e8",
-            background: "#1a73e8",
-            color: "#fff",
-            borderRadius: 10,
-            padding: "10px 14px",
-            cursor: "pointer",
-            fontWeight: 700,
-          }}
-        >
-          + Add Job
-        </button>
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          overflowX: "auto",
-          paddingTop: 12,
-        }}
-      >
-        {STATUSES.map((status) => {
-          const jobsForStatus = jobs.filter((j) => j.status === status);
-          return (
-            <StatusColumn
-              key={status}
-              status={status}
-              jobs={jobsForStatus}
-              onMoveNext={moveNext}
-            />
-          );
-        })}
-      </div>
-
-      <AddJobModal
-        open={isAddOpen}
-        onClose={() => setIsAddOpen(false)}
-        onAdd={addJob}
-      />
-=======
     <div style={page}>
       <div style={board}>
         {STATUSES.map((status) => (
@@ -170,7 +108,6 @@ export default function Dashboard({ searchQuery = "" }) {
           defaultStatus={addStatus}
         />
       )}
->>>>>>> feature/kanban-board
     </div>
   );
 }
