@@ -1,33 +1,33 @@
-import { useState } from "react";
-import { STATUSES } from "../../constants/statuses";
+import { useEffect, useState } from "react";
 
-export default function AddJobModal({ open, onClose, onAdd }) {
+export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
   const [companyName, setCompanyName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
-  const [status, setStatus] = useState(STATUSES[0]);
   const [location, setLocation] = useState("");
   const [workType, setWorkType] = useState("hybrid");
   const [tagsText, setTagsText] = useState("");
 
-  if (!open) return null;
-
-  const reset = () => {
+  // whenever modal opens (or defaultStatus changes), reset form
+  useEffect(() => {
+    if (!open) return;
     setCompanyName("");
     setJobTitle("");
-    setStatus(STATUSES[0]);
     setLocation("");
     setWorkType("hybrid");
     setTagsText("");
-  };
+  }, [open, defaultStatus]);
+
+  if (!open) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const trimmedCompany = companyName.trim();
     const trimmedTitle = jobTitle.trim();
-
-    if (!trimmedCompany || !trimmedTitle) return;
-
+    if (!trimmedCompany || !trimmedTitle) {
+      addToast("error", "Error", "Company and Job Title are required");
+      return;
+    }
     const tags = tagsText
       .split(",")
       .map((t) => t.trim())
@@ -38,7 +38,7 @@ export default function AddJobModal({ open, onClose, onAdd }) {
       id: crypto.randomUUID(),
       companyName: trimmedCompany,
       jobTitle: trimmedTitle,
-      status,
+      status: defaultStatus, // ✅ locked to column
       location: location.trim(),
       workType,
       tags,
@@ -46,7 +46,6 @@ export default function AddJobModal({ open, onClose, onAdd }) {
       updatedAt: new Date().toISOString(),
     });
 
-    reset();
     onClose();
   };
 
@@ -83,7 +82,13 @@ export default function AddJobModal({ open, onClose, onAdd }) {
             marginBottom: 12,
           }}
         >
-          <h2 style={{ margin: 0, fontSize: 18, color: "#111" }}>Add Job</h2>
+          <div style={{ display: "grid", gap: 2 }}>
+            <h2 style={{ margin: 0, fontSize: 18, color: "#111" }}>Add Job</h2>
+            <div style={{ fontSize: 12, color: "#666" }}>
+              Adding to: <b style={{ color: "#111" }}>{defaultStatus}</b>
+            </div>
+          </div>
+
           <button
             onClick={onClose}
             style={{
@@ -99,9 +104,7 @@ export default function AddJobModal({ open, onClose, onAdd }) {
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 10 }}>
-          <label
-            style={{ display: "grid", gap: 6, fontSize: 13, color: "#333" }}
-          >
+          <label style={labelStyle}>
             Job Title *
             <input
               value={jobTitle}
@@ -111,9 +114,7 @@ export default function AddJobModal({ open, onClose, onAdd }) {
             />
           </label>
 
-          <label
-            style={{ display: "grid", gap: 6, fontSize: 13, color: "#333" }}
-          >
+          <label style={labelStyle}>
             Company Name *
             <input
               value={companyName}
@@ -126,26 +127,7 @@ export default function AddJobModal({ open, onClose, onAdd }) {
           <div
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}
           >
-            <label
-              style={{ display: "grid", gap: 6, fontSize: 13, color: "#333" }}
-            >
-              Status
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                style={inputStyle}
-              >
-                {STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label
-              style={{ display: "grid", gap: 6, fontSize: 13, color: "#333" }}
-            >
+            <label style={labelStyle}>
               Work Type
               <select
                 value={workType}
@@ -157,23 +139,19 @@ export default function AddJobModal({ open, onClose, onAdd }) {
                 <option value="on site">on site</option>
               </select>
             </label>
+
+            <label style={labelStyle}>
+              Location
+              <input
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="e.g. Tel Aviv"
+                style={inputStyle}
+              />
+            </label>
           </div>
 
-          <label
-            style={{ display: "grid", gap: 6, fontSize: 13, color: "#333" }}
-          >
-            Location
-            <input
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g. Tel Aviv"
-              style={inputStyle}
-            />
-          </label>
-
-          <label
-            style={{ display: "grid", gap: 6, fontSize: 13, color: "#333" }}
-          >
+          <label style={labelStyle}>
             Tags (comma separated)
             <input
               value={tagsText}
@@ -191,14 +169,7 @@ export default function AddJobModal({ open, onClose, onAdd }) {
               marginTop: 6,
             }}
           >
-            <button
-              type="button"
-              onClick={() => {
-                reset();
-                onClose();
-              }}
-              style={secondaryBtn}
-            >
+            <button type="button" onClick={onClose} style={secondaryBtn}>
               Cancel
             </button>
 
@@ -211,6 +182,8 @@ export default function AddJobModal({ open, onClose, onAdd }) {
     </div>
   );
 }
+
+const labelStyle = { display: "grid", gap: 6, fontSize: 13, color: "#333" };
 
 const inputStyle = {
   width: "100%",
