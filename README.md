@@ -1,17 +1,31 @@
-Nextstep - Job Application Manager
-Project Overview
-Nextstep is a web application designed to help users manage their job search journey. The system tracks applications through five distinct stages: Wishlist, Applied, Interviewing, Offer, and Rejected.
-Tech Stack
-Framework: React with Vite
-UI Library: Material UI (using sx prop for styling)
-Styling: CSS (Modular approach)
-Data: Mock Data (JSON) for the initial phase
-Core Features
-Application Tracking: Manage job details including company info, job titles, and specific status updates.
-Dynamic Forms: Context-aware fields that change based on the application status (e.g., interview dates, offer amounts).
-Company Management: Select from existing companies or add new ones with custom logos.
-Advanced UI (In-progress): Search bar, Archive page, and Dark/Light mode support.
-Team Members:
-Naseem Badran
-Tarik Akawi
-Mahmood Zangari
+# 🚀 Nextstep - Job Application Manager
+
+**Nextstep** is a specialized web application designed to help job seekers organize, track, and manage their recruitment processes in one centralized location. This project is built as part of our professional training.
+
+## 📋 Project Overview
+The system allows users to track job applications through a generic recruitment lifecycle:
+1. **Wishlist** – Jobs you plan to apply for
+2. **Applied** – Sent applications awaiting response
+3. **Interviewing** – Active interview processes
+4. **Offer** – Contracts received
+5. **Rejected** – Applications that did not result in a hire
+
+
+
+## 🛠️ Tech Stack
+* **Framework:** [React](https://react.dev/) 
+* **Build Tool:** [Vite](https://vitejs.dev/)
+* **UI Library:** [Material UI (MUI)](https://mui.com/) with `sx` prop styling 
+* **Styling:** Modular CSS
+* **Data Management:** Local Mock Data (JSON) 
+
+## ✨ Key Features
+* **Dynamic Application Tracking:** Manage detailed job entities including company names, logos, job titles, and locations
+* **Context-Aware Fields:** The interface dynamically updates to show relevant fields based on the application status (e.g., Interview rounds or Offer amounts)
+* **Company Entity Management:** Choose from existing companies or create new ones, including custom logo support
+* **Advanced UI Shells:** Includes UI for Search, Dark/Light mode, and a dedicated Archive for rejected applications
+
+## 👥 The Team
+* **Naseem Badran**
+* **Tarki Akawi**
+* **Mahmood Zangari**
