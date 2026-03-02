@@ -1,0 +1,88 @@
+/* src/components/Sidebar/sidebar.css */
+.sidebar {
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  border-right: 1px solid var(--sidebar-border);
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--sidebar-border);
+}
+
+.brandLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--sidebar-border);
+  font-weight: 900;
+}
+
+.brandName {
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.brandSub {
+  color: var(--sidebar-muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.nav {
+  display: grid;
+  gap: 8px;
+  padding: 0 6px;
+}
+
+.navItem {
+  text-align: left;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--sidebar-text);
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 650;
+}
+
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--sidebar-border);
+}
+
+.navItem.active {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--sidebar-border);
+}
+
+.sidebarFooter {
+  margin-top: auto;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--sidebar-border);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.hintTitle {
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.hintText {
+  color: var(--sidebar-muted);
+  font-size: 12.5px;
+  line-height: 1.35;
+}
