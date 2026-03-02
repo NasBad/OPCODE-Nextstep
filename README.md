@@ -1,16 +1,35 @@
-# React + Vite
+# 🚀 Nextstep - Job Application Manager
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Nextstep** is a specialized web application designed to help job seekers organize, track, and manage their recruitment processes in one centralized location. This project is built as part of our professional training.
 
-Currently, two official plugins are available:
+## 📋 Project Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The system allows users to track job applications through a generic recruitment lifecycle:
 
-## React Compiler
+1. **Wishlist** – Jobs you plan to apply for
+2. **Applied** – Sent applications awaiting response
+3. **Interviewing** – Active interview processes
+4. **Offer** – Contracts received
+5. **Rejected** – Applications that did not result in a hire
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Tech Stack
 
-## Expanding the ESLint configuration
+- **Framework:** [React](https://react.dev/)
+- **Build Tool:** [Vite](https://vitejs.dev/)
+- **UI Library:** [Material UI (MUI)](https://mui.com/) with `sx` prop styling
+- **Styling:** Modular CSS
+- **Data Management:** Local Mock Data (JSON)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ✨ Key Features
+
+- **Dynamic Application Tracking:** Manage detailed job entities including company names, logos, job titles, and locations
+- **Context-Aware Fields:** The interface dynamically updates to show relevant fields based on the application status (e.g., Interview rounds or Offer amounts)
+- **Company Entity Management:** Choose from existing companies or create new ones, including custom logo support
+- **Advanced UI Shells:** Includes UI for Search, Dark/Light mode, and a dedicated Archive for rejected applications
+
+## 👥 The Team
+
+- **Naseem Badran**
+- **Tarki Akawi**
+- **Mahmood Zangari**
+
