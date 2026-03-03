@@ -1,5 +1,7 @@
 // src/components/Topbar/Topbar.jsx
 import "./topbar.css";
+import ProfileMenu from "../ProfileMenu/ProfileMenu";
+import avatar from "../../assets/avatar.png";
 
 export default function Topbar({
   searchValue,
@@ -15,6 +17,13 @@ export default function Topbar({
       </div>
 
       <div className="topbarRight">
+        <button
+          className="ghostBtn"
+          onClick={onToggleTheme}
+          title="Toggle theme"
+        >
+          {theme === "dark" ? "🌙" : "☀️"}
+        </button>
         <div className="searchBox">
           <span className="searchIcon">🔎</span>
           <input
@@ -23,14 +32,15 @@ export default function Topbar({
             placeholder="Search by title, company, tags..."
           />
         </div>
-
-        <button
-          className="ghostBtn"
-          onClick={onToggleTheme}
-          title="Toggle theme"
-        >
-          {theme === "dark" ? "🌙" : "☀️"}
-        </button>
+        <ProfileMenu
+          name="Naseem Badran"
+          avatarSrc={avatar}
+          onAction={(key) => {
+            if (key === "logout") alert("logout clicked");
+            if (key === "profile") alert("profile clicked");
+            if (key === "settings") alert("settings clicked");
+          }}
+        />
       </div>
     </header>
   );

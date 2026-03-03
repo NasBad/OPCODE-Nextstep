@@ -1,4 +1,5 @@
 import JobCard from "../JobCard/JobCard";
+import "./StatusColumn.css";
 
 export default function StatusColumn({
   status,
@@ -7,21 +8,28 @@ export default function StatusColumn({
   onEdit,
   onMoveTo,
   onAdd,
+  onSelect,
 }) {
   const emptyText = getEmptyText(status);
+  const theme = getEmptyTheme(status);
 
   return (
-    <div style={col}>
+    <div className="statusCol">
       {/* Header row */}
-      <div style={colHeader}>
+      <div className="statusColHeader">
         <div>
-          <h3 style={colTitle}>{status}</h3>
-          <div style={colMeta}>{jobs.length} jobs</div>
+          <h3 className="statusColTitle">{status}</h3>
+          <div className="statusColMeta">{jobs.length} jobs</div>
         </div>
 
         <button
           onClick={onAdd}
-          style={plusBtn}
+          className="statusPlusBtn"
+          style={{
+            borderColor: theme.border,
+            background: theme.lightBg,
+            color: theme.border,
+          }}
           aria-label={`Add job to ${status}`}
           title={`Add to ${status}`}
         >
@@ -30,17 +38,29 @@ export default function StatusColumn({
       </div>
 
       {/* Body */}
-      <div style={list}>
+      <div className="statusList">
         {jobs.length === 0 ? (
-          <div style={emptyWrap}>
-            <div style={emptyLabel}>
-              <span style={{ fontWeight: 800 }}>✦</span> Empty State
+          <div className="emptyWrap">
+            <div className="emptyLabel" style={{ color: theme.border }}>
+              <span className="emptyStar">✦</span> Empty State
             </div>
 
-            <div style={emptyBox}>
-              <div style={emptyIcon}>💬</div>
-              <div style={emptyTitle}>{emptyText}</div>
-              <div style={emptyHint}>Click + to add a job</div>
+            <div
+              className="emptyBox"
+              style={{
+                borderColor: theme.border,
+                background: theme.gradient,
+              }}
+            >
+              <div className="emptyIcon" style={{ color: theme.border }}>
+                {theme.icon}
+              </div>
+
+              <div className="emptyTitle" style={{ color: theme.border }}>
+                {emptyText}
+              </div>
+
+              <div className="emptyHint">Click + to add a job</div>
             </div>
           </div>
         ) : (
@@ -51,6 +71,7 @@ export default function StatusColumn({
               onDelete={onDelete}
               onEdit={onEdit}
               onMoveTo={onMoveTo}
+              onSelect={onSelect}
             />
           ))
         )}
@@ -59,107 +80,67 @@ export default function StatusColumn({
   );
 }
 
+/* ---------- Empty State Text ---------- */
 function getEmptyText(status) {
-  // You can customize per column if you want
-  if (status.toLowerCase().includes("interview")) {
-    return "Drag Your First Interview Here!";
-  }
-  if (status.toLowerCase().includes("offer")) {
-    return "Drop Your First Offer Here!";
-  }
-  if (status.toLowerCase().includes("reject")) {
-    return "Nothing Rejected Yet!";
-  }
-  if (status.toLowerCase().includes("applied")) {
-    return "Add Your First Application Here!";
-  }
-  return "Add Your First Job Here!";
+  const s = status.toLowerCase();
+
+  if (s.includes("interview")) return "Drag Your First Interview Here!";
+  if (s.includes("offer")) return "Drop Your First Offer Here!";
+  if (s.includes("applied")) return "Add Your First Application Here!";
+  if (s.includes("wishlist")) return "Add Your First Job Here!";
+
+  return "Add Your First Item Here!";
 }
 
-/* ---------- styles ---------- */
+/* ---------- Empty State Theme ---------- */
+function getEmptyTheme(status) {
+  const s = status.toLowerCase();
 
-const col = {
-  minWidth: 280,
-  maxWidth: 280,
-  flex: "0 0 280px",
-  background: "#ffffff",
-  borderRadius: 14,
-  padding: 12,
-  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-  display: "flex",
-  flexDirection: "column",
-};
+  if (s.includes("wishlist")) {
+    return {
+      border: "#7c3aed",
+      lightBg: "#f3efff",
+      gradient:
+        "linear-gradient(135deg, rgba(124,58,237,0.25), rgba(255,255,255,1))",
+      icon: "🔖",
+    };
+  }
 
-const colHeader = {
-  display: "flex",
-  alignItems: "flex-start",
-  justifyContent: "space-between",
-  gap: 10,
-  marginBottom: 12,
-};
+  if (s.includes("applied")) {
+    return {
+      border: "#ef4444",
+      lightBg: "#fff1f2",
+      gradient:
+        "linear-gradient(135deg, rgba(239,68,68,0.25), rgba(255,255,255,1))",
+      icon: "✈️",
+    };
+  }
 
-const colTitle = { margin: 0, color: "#111", fontWeight: 900 };
-const colMeta = { fontSize: 12, color: "#666", marginTop: 4 };
+  if (s.includes("interview")) {
+    return {
+      border: "#f59e0b",
+      lightBg: "#fff8db",
+      gradient:
+        "linear-gradient(135deg, rgba(245,158,11,0.25), rgba(255,255,255,1))",
+      icon: "💬",
+    };
+  }
 
-const plusBtn = {
-  border: "1px solid #dbe6ff",
-  background: "#f1f5ff",
-  color: "#1a3a8a",
-  width: 34,
-  height: 34,
-  borderRadius: 10,
-  cursor: "pointer",
-  fontSize: 20,
-  fontWeight: 900,
-  lineHeight: "20px",
-  display: "grid",
-  placeItems: "center",
-};
+  if (s.includes("offer")) {
+    return {
+      border: "#10b981",
+      lightBg: "#eafff2",
+      gradient:
+        "linear-gradient(135deg, rgba(16,185,129,0.25), rgba(255,255,255,1))",
+      icon: "🏆",
+    };
+  }
 
-const list = {
-  display: "grid",
-  gap: 10,
-  flex: 1,
-};
-
-const emptyWrap = {
-  display: "grid",
-  gap: 8,
-};
-
-const emptyLabel = {
-  fontSize: 12,
-  color: "#7b61ff",
-  display: "flex",
-  alignItems: "center",
-  gap: 6,
-};
-
-const emptyBox = {
-  border: "2px dashed #f2b24b",
-  borderRadius: 14,
-  padding: 16,
-  background:
-    "linear-gradient(135deg, rgba(255, 207, 123, 0.35), rgba(255, 255, 255, 1))",
-  minHeight: 140,
-  display: "grid",
-  placeItems: "center",
-  textAlign: "center",
-};
-
-const emptyIcon = {
-  fontSize: 46,
-  marginBottom: 6,
-};
-
-const emptyTitle = {
-  fontSize: 18,
-  fontWeight: 900,
-  color: "#f0a100",
-};
-
-const emptyHint = {
-  marginTop: 6,
-  fontSize: 12,
-  color: "#777",
-};
+  return {
+    border: "#999",
+    lightBg: "#f3f4f6",
+    gradient:
+      "linear-gradient(135deg, rgba(200,200,200,0.25), rgba(255,255,255,1))",
+    icon: "📌",
+  };
+}
