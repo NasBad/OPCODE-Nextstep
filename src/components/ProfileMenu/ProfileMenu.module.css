@@ -1,0 +1,93 @@
+.wrap {
+  position: relative;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 8px 10px;
+
+  cursor: pointer;
+  user-select: none;
+}
+
+.trigger:hover {
+  filter: brightness(0.98);
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.name {
+  font-weight: 850;
+  font-size: 14px;
+  color: var(--text);
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chev {
+  opacity: 0.6;
+  font-size: 12px;
+  margin-left: 2px;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+
+  width: 220px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
+
+  padding: 8px;
+  z-index: 9999;
+}
+
+.item {
+  width: 100%;
+  text-align: left;
+
+  border: none;
+  background: transparent;
+
+  padding: 10px 10px;
+  border-radius: 12px;
+
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.sep {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0;
+}
+
+.danger {
+  color: #b00020;
+}
+
+.danger:hover {
+  background: rgba(176, 0, 32, 0.08);
+}
