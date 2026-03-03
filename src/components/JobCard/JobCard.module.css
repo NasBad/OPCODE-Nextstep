@@ -1,0 +1,264 @@
+.card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  border-radius: 16px;
+  padding: 14px;
+  border: 1px solid #eee;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+
+  display: grid;
+  gap: 12px;
+}
+
+.topRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.brandText {
+  min-width: 0;
+}
+
+.logoCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  color: #111;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  flex: 0 0 auto;
+}
+
+.companyName {
+  font-weight: 900;
+  color: #111;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subtitle {
+  margin-top: 2px;
+  font-size: 13px;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tagsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tagPill {
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #111;
+  font-weight: 600;
+}
+
+.footerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+}
+
+.clockIcon {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.metaText {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.infoBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  font-weight: 900;
+  color: #333;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+/* Menu */
+.kebabBtn {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 18px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.menuBox {
+  position: fixed;
+  width: 190px;
+  max-height: 210px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+  padding: 8px;
+  z-index: 999999;
+}
+
+.menuInner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 210px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.menuItem {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 10px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+  color: #111;
+}
+
+.dangerItem {
+  color: #b00020;
+  background: #fff5f5;
+  border: 1px solid #ffd7d7;
+}
+
+/* Modals */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: grid;
+  place-items: center;
+  z-index: 1000000;
+  padding: 16px;
+}
+
+.modalBox {
+  width: min(420px, 100%);
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #eee;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  padding: 16px;
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 900;
+  color: #111;
+  margin-bottom: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 900;
+  color: #222;
+}
+
+.input {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: #f7f7f7;
+}
+
+.select {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: #fff;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.btnGhost {
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btnPrimary {
+  border: 1px solid #1a3a8a;
+  background: #1a3a8a;
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btnDanger {
+  background: #b00020;
+  border: 1px solid #b00020;
+}
+
+.confirmText {
+  margin-bottom: 16px;
+  font-size: 14px;
+}

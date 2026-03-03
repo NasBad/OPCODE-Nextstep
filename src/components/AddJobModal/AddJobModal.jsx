@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useState } from "react";
 import { STATUSES } from "../../constants/statuses";
 
@@ -6,18 +5,10 @@ export default function AddJobModal({ open, onClose, onAdd }) {
   const [companyName, setCompanyName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [status, setStatus] = useState(STATUSES[0]);
-=======
-import { useEffect, useState } from "react";
-
-export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
-  const [companyName, setCompanyName] = useState("");
-  const [jobTitle, setJobTitle] = useState("");
->>>>>>> feature/kanban-board
   const [location, setLocation] = useState("");
   const [workType, setWorkType] = useState("hybrid");
   const [tagsText, setTagsText] = useState("");
 
-<<<<<<< HEAD
   if (!open) return null;
 
   const reset = () => {
@@ -28,35 +19,15 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
     setWorkType("hybrid");
     setTagsText("");
   };
-=======
-  // whenever modal opens (or defaultStatus changes), reset form
-  useEffect(() => {
-    if (!open) return;
-    setCompanyName("");
-    setJobTitle("");
-    setLocation("");
-    setWorkType("hybrid");
-    setTagsText("");
-  }, [open, defaultStatus]);
-
-  if (!open) return null;
->>>>>>> feature/kanban-board
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const trimmedCompany = companyName.trim();
     const trimmedTitle = jobTitle.trim();
-<<<<<<< HEAD
 
     if (!trimmedCompany || !trimmedTitle) return;
 
-=======
-    if (!trimmedCompany || !trimmedTitle) {
-      addToast("error", "Error", "Company and Job Title are required");
-      return;
-    }
->>>>>>> feature/kanban-board
     const tags = tagsText
       .split(",")
       .map((t) => t.trim())
@@ -67,11 +38,7 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
       id: crypto.randomUUID(),
       companyName: trimmedCompany,
       jobTitle: trimmedTitle,
-<<<<<<< HEAD
       status,
-=======
-      status: defaultStatus, // ✅ locked to column
->>>>>>> feature/kanban-board
       location: location.trim(),
       workType,
       tags,
@@ -79,10 +46,7 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
       updatedAt: new Date().toISOString(),
     });
 
-<<<<<<< HEAD
     reset();
-=======
->>>>>>> feature/kanban-board
     onClose();
   };
 
@@ -119,17 +83,7 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
             marginBottom: 12,
           }}
         >
-<<<<<<< HEAD
           <h2 style={{ margin: 0, fontSize: 18, color: "#111" }}>Add Job</h2>
-=======
-          <div style={{ display: "grid", gap: 2 }}>
-            <h2 style={{ margin: 0, fontSize: 18, color: "#111" }}>Add Job</h2>
-            <div style={{ fontSize: 12, color: "#666" }}>
-              Adding to: <b style={{ color: "#111" }}>{defaultStatus}</b>
-            </div>
-          </div>
-
->>>>>>> feature/kanban-board
           <button
             onClick={onClose}
             style={{
@@ -145,13 +99,9 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 10 }}>
-<<<<<<< HEAD
           <label
             style={{ display: "grid", gap: 6, fontSize: 13, color: "#333" }}
           >
-=======
-          <label style={labelStyle}>
->>>>>>> feature/kanban-board
             Job Title *
             <input
               value={jobTitle}
@@ -161,13 +111,9 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
             />
           </label>
 
-<<<<<<< HEAD
           <label
             style={{ display: "grid", gap: 6, fontSize: 13, color: "#333" }}
           >
-=======
-          <label style={labelStyle}>
->>>>>>> feature/kanban-board
             Company Name *
             <input
               value={companyName}
@@ -180,7 +126,6 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
           <div
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}
           >
-<<<<<<< HEAD
             <label
               style={{ display: "grid", gap: 6, fontSize: 13, color: "#333" }}
             >
@@ -201,9 +146,6 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
             <label
               style={{ display: "grid", gap: 6, fontSize: 13, color: "#333" }}
             >
-=======
-            <label style={labelStyle}>
->>>>>>> feature/kanban-board
               Work Type
               <select
                 value={workType}
@@ -215,7 +157,6 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
                 <option value="on site">on site</option>
               </select>
             </label>
-<<<<<<< HEAD
           </div>
 
           <label
@@ -233,21 +174,6 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
           <label
             style={{ display: "grid", gap: 6, fontSize: 13, color: "#333" }}
           >
-=======
-
-            <label style={labelStyle}>
-              Location
-              <input
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Tel Aviv"
-                style={inputStyle}
-              />
-            </label>
-          </div>
-
-          <label style={labelStyle}>
->>>>>>> feature/kanban-board
             Tags (comma separated)
             <input
               value={tagsText}
@@ -265,7 +191,6 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
               marginTop: 6,
             }}
           >
-<<<<<<< HEAD
             <button
               type="button"
               onClick={() => {
@@ -274,9 +199,6 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
               }}
               style={secondaryBtn}
             >
-=======
-            <button type="button" onClick={onClose} style={secondaryBtn}>
->>>>>>> feature/kanban-board
               Cancel
             </button>
 
@@ -290,11 +212,6 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
   );
 }
 
-<<<<<<< HEAD
-=======
-const labelStyle = { display: "grid", gap: 6, fontSize: 13, color: "#333" };
-
->>>>>>> feature/kanban-board
 const inputStyle = {
   width: "100%",
   border: "1px solid #ddd",

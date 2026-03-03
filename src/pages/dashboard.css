@@ -1,0 +1,44 @@
+/* src/pages/dashboard.css */
+
+.dashboardPage {
+  height: 100%;
+  min-height: 0; /* important for nested scroll layouts */
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+}
+
+/* 4 columns on desktop, responsive below */
+.dashboardBoard {
+  height: 100%;
+  min-height: 0; /* important */
+  width: 100%;
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(260px, 1fr));
+  gap: 16px;
+
+  align-items: stretch;
+  overflow: hidden; /* prevents page overflow */
+}
+
+/* 3 columns */
+@media (max-width: 1200px) {
+  .dashboardBoard {
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+  }
+}
+
+/* 2 columns */
+@media (max-width: 900px) {
+  .dashboardBoard {
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+  }
+}
+
+/* 1 column */
+@media (max-width: 600px) {
+  .dashboardBoard {
+    grid-template-columns: 1fr;
+  }
+}

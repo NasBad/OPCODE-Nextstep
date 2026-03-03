@@ -1,88 +1,184 @@
 /* src/components/Sidebar/sidebar.css */
+
 .sidebar {
-  background: var(--sidebar-bg);
-  color: var(--sidebar-text);
-  border-right: 1px solid var(--sidebar-border);
-  padding: 18px 14px;
+  /* light layout like screenshot */
+  background: #ffffff;
+  color: #111827;
+  border-right: 1px solid #e5e7eb;
+
+  padding: 18px 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  height: 100%;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 10px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--sidebar-border);
+  padding: 6px 6px;
+}
+
+.brandImage {
+  width: 160px; /* adjust if needed */
+  height: auto;
+  object-fit: contain;
 }
 
 .brandLogo {
   width: 40px;
   height: 40px;
-  border-radius: 14px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--sidebar-border);
-  font-weight: 900;
-}
 
-.brandName {
+  background: #eef2ff; /* subtle bluish tile */
+  border: 1px solid #e5e7eb;
   font-weight: 900;
-  letter-spacing: 0.2px;
+  color: #2563eb;
 }
 
 .brandSub {
-  color: var(--sidebar-muted);
-  font-size: 12px;
-  margin-top: 2px;
+  display: none; /* screenshot doesn’t show subtitle under brand */
 }
 
+/* ---------- Section label "JOBS" ---------- */
+.sectionLabel {
+  margin-top: 18px;
+  padding: 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+/* ---------- Nav ---------- */
 .nav {
+  margin-top: 10px;
   display: grid;
-  gap: 8px;
+  gap: 6px;
   padding: 0 6px;
 }
 
 .navItem {
+  position: relative;
+
+  display: flex; /* icon + text */
+  align-items: center;
+  gap: 10px;
+
+  width: 100%;
   text-align: left;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--sidebar-text);
+
   padding: 10px 12px;
   border-radius: 12px;
+
+  background: transparent;
+  border: 1px solid transparent;
+
   cursor: pointer;
-  font-weight: 650;
+  font-weight: 600;
+  color: #111827;
 }
 
 .navItem:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--sidebar-border);
+  background: #f9fafb;
+  border-color: #eef2f7;
 }
 
 .navItem.active {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--sidebar-border);
+  background: #f3f4f6; /* light gray pill */
+  border-color: #f3f4f6;
 }
 
+/* blue left indicator on active */
+.navItem.active::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 999px;
+  background: #3b82f6;
+}
+
+/* Icon inside navItem */
+.navIcon {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  color: #111827;
+  opacity: 0.9;
+}
+
+.navItem.active .navIcon,
+.navItem.active .navText {
+  color: #3b82f6; /* active blue */
+}
+
+.navText {
+  flex: 1;
+  font-size: 14px;
+}
+
+/* ---------- Footer (Settings + collapse) ---------- */
 .sidebarFooter {
   margin-top: auto;
-  padding: 12px;
-  border-radius: 14px;
-  border: 1px solid var(--sidebar-border);
-  background: rgba(255, 255, 255, 0.04);
+
+  /* remove “tip card” look */
+  background: transparent;
+  border: none;
+  padding: 0 6px;
 }
 
-.hintTitle {
-  font-weight: 900;
-  margin-bottom: 6px;
+.footerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 6px;
 }
 
+.footerBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  font-weight: 600;
+  color: #111827;
+  padding: 10px 8px;
+  border-radius: 12px;
+}
+
+.footerBtn:hover {
+  background: #f9fafb;
+}
+
+.collapseBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  display: grid;
+  place-items: center;
+  color: #6b7280;
+}
+
+.collapseBtn:hover {
+  background: #f3f4f6;
+}
+
+/* Hide old hint styles (tip box) */
+.hintTitle,
 .hintText {
-  color: var(--sidebar-muted);
-  font-size: 12.5px;
-  line-height: 1.35;
+  display: none;
 }
