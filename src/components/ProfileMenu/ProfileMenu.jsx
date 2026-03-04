@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./ProfileMenu.module.css";
 import avatar from "../../assets/avatar.png";
+import { useToast } from "../Toast/ToastContext";
 
 export default function ProfileMenu({
   name = "Naseem Badran",
@@ -10,6 +11,8 @@ export default function ProfileMenu({
   const [open, setOpen] = useState(false);
   const btnRef = useRef(null);
   const menuRef = useRef(null);
+
+  const { addToast } = useToast();
 
   const toggle = (e) => {
     e.stopPropagation();
@@ -56,16 +59,22 @@ export default function ProfileMenu({
 
       {open && (
         <div ref={menuRef} className={styles.menu}>
-          <button className={styles.item} onClick={() => clickItem("profile")}>
+          <button
+            className={styles.item}
+            onClick={() => addToast("warning", "Warning", "Page Not Ready Yet")}
+          >
             👤 Profile
           </button>
-          <button className={styles.item} onClick={() => clickItem("settings")}>
+          <button
+            className={styles.item}
+            onClick={() => addToast("warning", "Warning", "Page Not Ready Yet")}
+          >
             ⚙️ Settings
           </button>
           <div className={styles.sep} />
           <button
             className={`${styles.item} ${styles.danger}`}
-            onClick={() => clickItem("logout")}
+            onClick={() => addToast("warning", "Warning", "Page Not Ready Yet")}
           >
             🚪 Logout
           </button>

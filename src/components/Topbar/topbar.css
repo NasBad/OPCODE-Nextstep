@@ -5,8 +5,8 @@
   top: 0;
   z-index: 50;
 
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--border);
 
   padding: 16px 22px;
   display: flex;
@@ -18,8 +18,8 @@
 /* Left: title + subtitle */
 .topbarLeft .pageTitle {
   font-size: 18px;
-  font-weight: 900;
-  color: #111827;
+  font-weight: 950;
+  color: var(--text);
 }
 
 .topbarLeft .pageSub {
@@ -45,9 +45,9 @@
   gap: 10px;
 
   padding: 0 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--topbar-bg);
 
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
 }
@@ -63,7 +63,7 @@
   width: 100%;
   font-size: 14px;
   background: transparent;
-  color: #111827;
+  color: var(--text);
 }
 
 .searchBox input::placeholder {
@@ -75,8 +75,8 @@
   width: 45px;
   height: 45px;
 
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
+  border: 1px solid var(--border);
+  background: var(--topbar-bg);
   border-radius: 10px;
 
   cursor: pointer;
@@ -87,22 +87,5 @@
 }
 
 .ghostBtn:hover {
-  background: #f9fafb;
-}
-
-/* Optional: primary button (if you still use it somewhere) */
-.primaryBtn {
-  height: 45px;
-  border: 1px solid #2563eb;
-  background: #2563eb;
-  color: #ffffff;
-  border-radius: 10px;
-  padding: 0 14px;
-  cursor: pointer;
-  font-weight: 800;
-}
-
-.primaryBtn:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--topbar-bg);
 }
