@@ -1,0 +1,99 @@
+/* Container */
+.toastContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 999999;
+}
+
+/* Card */
+.toastCard {
+  width: 360px;
+  background: var(--panel);
+  color: var(--text);
+
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+
+  border: 1px solid var(--border);
+  border-left: 6px solid;
+
+  animation: toastSlideIn 0.25s ease;
+}
+
+/* Content Layout */
+.toastContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toastIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.toastText {
+  flex: 1;
+  min-width: 0;
+}
+
+.toastTitle {
+  font-weight: 900;
+  font-size: 16px;
+  line-height: 1.1;
+}
+
+.toastMessage {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.25;
+}
+
+.toastClose {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--muted);
+  opacity: 0.9;
+  padding: 4px 8px;
+  border-radius: 10px;
+}
+
+.toastClose:hover {
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+/* Optional: subtle hover */
+.toastCard:hover {
+  transform: translateY(-1px);
+}
+
+/* Animation */
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

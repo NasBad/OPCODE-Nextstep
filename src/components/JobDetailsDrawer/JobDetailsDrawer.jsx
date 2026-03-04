@@ -1,6 +1,8 @@
 import styles from "./JobDetailsDrawer.module.css";
+import { useToast } from "../Toast/ToastContext";
 
 export default function JobDetailsDrawer({ job, open, onClose }) {
+  const { addToast } = useToast();
   if (!open) return null;
 
   return (
@@ -78,7 +80,12 @@ export default function JobDetailsDrawer({ job, open, onClose }) {
         </div>
 
         <div className={styles.footer}>
-          <button className={styles.primaryBtn} onClick={() => alert("TODO")}>
+          <button
+            className={styles.primaryBtn}
+            onClick={() =>
+              addToast("warning", "Warning", "Feature Not Ready Yet")
+            }
+          >
             Schedule Interview
           </button>
         </div>
