@@ -6,6 +6,11 @@
   grid-template-columns: 260px 1fr;
 }
 
+/* NEW: when sidebar collapses, content fills the page */
+.shell.sidebarCollapsed {
+  grid-template-columns: 76px 1fr;
+}
+
 .shellMain {
   min-width: 0;
   display: flex;

@@ -9,6 +9,7 @@ export const jobsMock = [
     tags: ["React", "JavaScript"],
     createdAt: "2026-03-01T09:30:00.000Z",
     updatedAt: "2026-03-01T09:30:00.000Z",
+    jobUrl: "https://example.com/job",
   },
   {
     id: "2",
@@ -23,6 +24,7 @@ export const jobsMock = [
     appliedDate: "2026-02-26T12:00:00.000Z",
     platform: "LinkedIn",
     notes: "Waiting for response",
+    jobUrl: "https://example.com/job",
   },
   {
     id: "3",
@@ -36,5 +38,6 @@ export const jobsMock = [
     updatedAt: "2026-03-01T15:00:00.000Z",
     nextInterviewDate: "2026-03-05T10:00:00.000Z",
     round: "HR Interview",
+    jobUrl: "https://example.com/job",
   },
 ];

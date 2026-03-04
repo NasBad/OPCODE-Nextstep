@@ -2,9 +2,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { STATUSES } from "../../constants/statuses";
 import styles from "./JobCard.module.css";
+import { useToast } from "../Toast/ToastContext";
+import useTheme from "../../hooks/useTheme";
 
 export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const { theme } = useTheme();
 
   // Move modal state
   const [moveModalOpen, setMoveModalOpen] = useState(false);
@@ -16,13 +20,17 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
   const kebabRef = useRef(null);
   const menuRef = useRef(null);
 
+  const { addToast } = useToast();
+
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
   const closeMenu = () => setMenuOpen(false);
 
   const fromStatus = job.status || "Wishlist";
-  const theme = useMemo(() => getStatusTheme(fromStatus), [fromStatus]);
-
+  const statusTheme = useMemo(
+    () => getStatusTheme(fromStatus, theme),
+    [fromStatus, theme],
+  );
   const calcPosition = () => {
     const btn = kebabRef.current;
     if (!btn) return;
@@ -122,8 +130,8 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
       className={styles.card}
       onClick={() => onSelect?.(job)}
       style={{
-        background: theme.card.background,
-        borderColor: theme.card.borderColor,
+        background: statusTheme.card.background,
+        borderColor: statusTheme.card.borderColor,
       }}
     >
       {/* Header row */}
@@ -131,17 +139,17 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
         <div className={styles.brandRow}>
           <div
             className={styles.logoCircle}
-            style={{ background: theme.logoBg }}
+            style={{ background: statusTheme.logoBg }}
           >
             {getInitials(job.companyName)}
           </div>
 
           <div className={styles.brandText}>
             <div className={styles.companyName}>{job.companyName}</div>
+            <div className={styles.subtitle}>{job.jobTitle}</div>
             <div className={styles.subtitle}>
-              {job.jobTitle}
-              {job.location ? `, ${job.location}` : ""}
-              {job.workType ? ` • ${job.workType}` : ""}
+              {job.location ? ` ${job.location} ,` : ""}
+              {job.workType ? ` ${job.workType}` : ""}
             </div>
           </div>
         </div>
@@ -149,7 +157,10 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
         <button
           type="button"
           ref={kebabRef}
-          onClick={toggleMenu}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleMenu(e);
+          }}
           className={styles.kebabBtn}
           aria-label="Card menu"
           title="Menu"
@@ -227,7 +238,9 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
           type="button"
           className={styles.infoBtn}
           title="Info"
-          onClick={() => alert(`${job.jobTitle} @ ${job.companyName}`)}
+          onClick={() =>
+            addToast("warning", "Warning", "Feature Not Ready Yet!")
+          }
         >
           i
         </button>
@@ -349,37 +362,67 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
 }
 
 /* ---------- Theme mapping ---------- */
-function getStatusTheme(status) {
+function getStatusTheme(status, theme) {
   const s = (status || "").toLowerCase();
+  const isDark = theme === "dark";
 
   if (s.includes("wishlist")) {
-    return {
-      card: { background: "#f3efff", borderColor: "#e2d9ff" },
-      logoBg: "#ffffff",
-    };
+    return isDark
+      ? {
+          card: { background: "#2b1f4a", borderColor: "#5b3dbd" },
+          logoBg: "#3a2c6b",
+        }
+      : {
+          card: { background: "#f3efff", borderColor: "#e2d9ff" },
+          logoBg: "#ffffff",
+        };
   }
+
   if (s.includes("applied")) {
-    return {
-      card: { background: "#fff0f1", borderColor: "#ffd4d8" },
-      logoBg: "#ffffff",
-    };
+    return isDark
+      ? {
+          card: { background: "#3a1c22", borderColor: "#b91c1c" },
+          logoBg: "#4a222a",
+        }
+      : {
+          card: { background: "#fff0f1", borderColor: "#ffd4d8" },
+          logoBg: "#ffffff",
+        };
   }
+
   if (s.includes("interview")) {
-    return {
-      card: { background: "#fff8db", borderColor: "#ffe89e" },
-      logoBg: "#ffffff",
-    };
+    return isDark
+      ? {
+          card: { background: "#3a2f0f", borderColor: "#d97706" },
+          logoBg: "#4a3a14",
+        }
+      : {
+          card: { background: "#fff8db", borderColor: "#ffe89e" },
+          logoBg: "#ffffff",
+        };
   }
+
   if (s.includes("offer")) {
-    return {
-      card: { background: "#eafff2", borderColor: "#b9f3d2" },
-      logoBg: "#ffffff",
-    };
+    return isDark
+      ? {
+          card: { background: "#12392b", borderColor: "#10b981" },
+          logoBg: "#184c39",
+        }
+      : {
+          card: { background: "#eafff2", borderColor: "#b9f3d2" },
+          logoBg: "#ffffff",
+        };
   }
-  return {
-    card: { background: "#f3f4f6", borderColor: "#e5e7eb" },
-    logoBg: "#ffffff",
-  };
+
+  return isDark
+    ? {
+        card: { background: "#1e293b", borderColor: "#334155" },
+        logoBg: "#2a3446",
+      }
+    : {
+        card: { background: "#f3f4f6", borderColor: "#e5e7eb" },
+        logoBg: "#ffffff",
+      };
 }
 
 function getInitials(name) {

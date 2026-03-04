@@ -7,13 +7,16 @@
 
   border-radius: 16px;
   padding: 14px;
-  border: 1px solid #eee;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
 
   display: grid;
   gap: 12px;
+
+  cursor: pointer;
 }
 
+/* Header */
 .topRow {
   display: flex;
   align-items: flex-start;
@@ -41,14 +44,19 @@
   display: grid;
   place-items: center;
   font-weight: 900;
-  color: #111;
+
+  /* ✅ make initials readable in dark mode */
+  color: var(--text);
+
+  /* subtle border */
+  border: 1px solid var(--border);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   flex: 0 0 auto;
 }
 
 .companyName {
   font-weight: 900;
-  color: #111;
+  color: var(--text);
   line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
@@ -58,12 +66,13 @@
 .subtitle {
   margin-top: 2px;
   font-size: 13px;
-  color: #555;
+  color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+/* Tags */
 .tagsRow {
   display: flex;
   flex-wrap: wrap;
@@ -72,14 +81,16 @@
 
 .tagPill {
   font-size: 13px;
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(0, 0, 0, 0.08);
   padding: 6px 10px;
   border-radius: 999px;
-  color: #111;
   font-weight: 600;
+
+  background: color-mix(in srgb, var(--panel) 80%, transparent);
+  border: 1px solid var(--border);
+  color: var(--text);
 }
 
+/* Footer */
 .footerRow {
   display: flex;
   align-items: center;
@@ -90,37 +101,36 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #666;
+  color: var(--muted);
 }
 
 .clockIcon {
   font-size: 14px;
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
 .metaText {
   font-size: 13px;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .infoBtn {
   width: 26px;
   height: 26px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  background: rgba(255, 255, 255, 0.75);
   cursor: pointer;
   font-weight: 900;
-  color: #333;
   display: grid;
   place-items: center;
   padding: 0;
+
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel) 80%, transparent);
+  color: var(--text);
 }
 
-/* Menu */
+/* Menu button */
 .kebabBtn {
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  background: rgba(255, 255, 255, 0.8);
   border-radius: 12px;
   width: 34px;
   height: 34px;
@@ -130,19 +140,25 @@
   display: grid;
   place-items: center;
   padding: 0;
+
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel) 80%, transparent);
+  color: var(--text);
 }
 
+/* Menu panel */
 .menuBox {
   position: fixed;
   width: 190px;
   max-height: 210px;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #eee;
   border-radius: 12px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
   padding: 8px;
   z-index: 999999;
+
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 
 .menuInner {
@@ -163,13 +179,24 @@
   border-radius: 10px;
   cursor: pointer;
   font-weight: 800;
-  color: #111;
+  color: var(--text);
+}
+
+.menuItem:hover {
+  background: color-mix(in srgb, var(--panel-2) 70%, transparent);
 }
 
 .dangerItem {
   color: #b00020;
   background: #fff5f5;
   border: 1px solid #ffd7d7;
+}
+
+/* ✅ dark-mode version of danger item */
+:root[data-theme="dark"] .dangerItem {
+  color: #ff5a6f;
+  background: rgba(255, 90, 111, 0.12);
+  border: 1px solid rgba(255, 90, 111, 0.25);
 }
 
 /* Modals */
@@ -185,17 +212,18 @@
 
 .modalBox {
   width: min(420px, 100%);
-  background: #fff;
   border-radius: 16px;
-  border: 1px solid #eee;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
   padding: 16px;
+
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 
 .modalTitle {
   font-size: 18px;
   font-weight: 900;
-  color: #111;
+  color: var(--text);
   margin-bottom: 12px;
 }
 
@@ -208,23 +236,28 @@
 .label {
   font-size: 13px;
   font-weight: 900;
-  color: #222;
+  color: var(--text);
+  opacity: 0.9;
 }
 
 .input {
-  border: 1px solid #ddd;
   border-radius: 12px;
   padding: 10px 12px;
   font-size: 14px;
-  background: #f7f7f7;
+
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
 }
 
 .select {
-  border: 1px solid #ddd;
   border-radius: 12px;
   padding: 10px 12px;
   font-size: 14px;
-  background: #fff;
+
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
 }
 
 .modalActions {
@@ -235,22 +268,25 @@
 }
 
 .btnGhost {
-  border: 1px solid #ddd;
-  background: #fff;
   border-radius: 12px;
   padding: 10px 12px;
   font-weight: 900;
   cursor: pointer;
+
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
 }
 
 .btnPrimary {
-  border: 1px solid #1a3a8a;
-  background: #1a3a8a;
-  color: #fff;
   border-radius: 12px;
   padding: 10px 14px;
   font-weight: 900;
   cursor: pointer;
+
+  border: 1px solid color-mix(in srgb, var(--primary) 70%, transparent);
+  background: var(--primary);
+  color: #fff;
 }
 
 .btnDanger {
@@ -261,4 +297,6 @@
 .confirmText {
   margin-bottom: 16px;
   font-size: 14px;
+  color: var(--text);
+  opacity: 0.9;
 }

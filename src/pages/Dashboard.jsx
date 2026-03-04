@@ -1,15 +1,24 @@
+// src/pages/Dashboard.jsx
+
 import { useMemo, useState } from "react";
 import { STATUSES } from "../constants/statuses";
-import StatusColumn from "../components/StatusColumn/StatusColumn";
 import { jobsMock } from "../data/jobsMock";
 import AddJobModal from "../components/AddJobModal/AddJobModal";
 import { useToast } from "../components/Toast/ToastContext";
-import JobDetailsDrawer from "../components/JobDetailsDrawer/JobDetailsDrawer"; // ✅ NEW
+import JobDetailsDrawer from "../components/JobDetailsDrawer/JobDetailsDrawer";
 import "./dashboard.css";
+
+// ✅ NEW (separated views)
+import DashboardHeader from "../features/dashboard/DashboardHeader";
+import KanbanBoard from "../features/dashboard/KanbanBoard";
+import ListView from "../features/dashboard/ListView";
 
 export default function Dashboard({ searchQuery = "" }) {
   const [jobs, setJobs] = useState(jobsMock);
   const { addToast } = useToast();
+
+  // ✅ NEW: view mode
+  const [viewMode, setViewMode] = useState("kanban"); // "kanban" | "list"
 
   const [addOpen, setAddOpen] = useState(false);
   const [addStatus, setAddStatus] = useState(STATUSES[0]);
@@ -48,6 +57,15 @@ export default function Dashboard({ searchQuery = "" }) {
     });
     return map;
   }, [filteredJobs, visibleStatuses]);
+
+  // ✅ list view sorting (latest updated first)
+  const listJobs = useMemo(() => {
+    return [...filteredJobs].sort((a, b) => {
+      const da = new Date(a.updatedAt ?? a.createdAt ?? 0).getTime();
+      const db = new Date(b.updatedAt ?? b.createdAt ?? 0).getTime();
+      return db - da;
+    });
+  }, [filteredJobs]);
 
   const addJob = (newJob) => {
     const jobWithStatus = {
@@ -106,7 +124,7 @@ export default function Dashboard({ searchQuery = "" }) {
   };
 
   const editJob = (job) => {
-    alert(`Edit clicked for: ${job.jobTitle} @ ${job.companyName}`);
+    addToast("warning", "Warning", "Feature Not Ready Yet");
   };
 
   // ✅ OPEN drawer when card clicked
@@ -117,23 +135,36 @@ export default function Dashboard({ searchQuery = "" }) {
 
   return (
     <div className="dashboardPage">
-      <div className="dashboardBoard">
-        {visibleStatuses.map((status) => (
-          <StatusColumn
-            key={status}
-            status={status}
-            jobs={jobsByStatus[status] ?? []}
-            onDelete={deleteJob}
-            onEdit={editJob}
-            onMoveTo={moveTo}
-            onAdd={() => {
-              setAddStatus(status);
-              setAddOpen(true);
-            }}
-            onSelect={onSelectJob} // ✅ NEW
-          />
-        ))}
-      </div>
+      <DashboardHeader
+        viewMode={viewMode}
+        onToggleView={() =>
+          setViewMode((v) => (v === "kanban" ? "list" : "kanban"))
+        }
+      />
+
+      {viewMode === "kanban" ? (
+        <KanbanBoard
+          statuses={visibleStatuses}
+          jobsByStatus={jobsByStatus}
+          onDelete={deleteJob}
+          onEdit={editJob}
+          onMoveTo={moveTo}
+          onAdd={(status) => {
+            setAddStatus(status);
+            setAddOpen(true);
+          }}
+          onSelect={onSelectJob}
+        />
+      ) : (
+        <ListView
+          jobs={listJobs}
+          statuses={visibleStatuses}
+          onMoveTo={moveTo}
+          onDelete={deleteJob}
+          onSelect={onSelectJob}
+          onEdit={editJob}
+        />
+      )}
 
       {addOpen && (
         <AddJobModal
