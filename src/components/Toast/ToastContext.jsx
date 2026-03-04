@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
+import "./toast.css";
 
 const ToastContext = createContext();
 
@@ -13,10 +14,9 @@ export function ToastProvider({ children }) {
   const addToast = useCallback(
     (type, title, message) => {
       const id = crypto.randomUUID();
-
       const newToast = { id, type, title, message };
-      setToasts((prev) => [...prev, newToast]);
 
+      setToasts((prev) => [...prev, newToast]);
       setTimeout(() => removeToast(id), 4000);
     },
     [removeToast],
@@ -27,7 +27,7 @@ export function ToastProvider({ children }) {
       {children}
 
       {createPortal(
-        <div style={containerStyle}>
+        <div className="toastContainer">
           {toasts.map((toast) => (
             <ToastCard
               key={toast.id}
@@ -49,68 +49,30 @@ export function useToast() {
 /* ------------------ Toast Card ------------------ */
 
 function ToastCard({ toast, onClose }) {
-  const config = toastStyles[toast.type];
+  const config = toastStyles[toast.type] || toastStyles.warning;
 
   return (
-    <div style={{ ...cardStyle, borderLeft: `6px solid ${config.color}` }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <div style={{ ...iconCircle, background: config.color }}>
+    <div
+      className={`toastCard toast-${toast.type}`}
+      style={{ borderLeftColor: config.color }}
+    >
+      <div className="toastContent">
+        <div className="toastIcon" style={{ background: config.color }}>
           {config.icon}
         </div>
 
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 800, fontSize: 18 }}>{toast.title}</div>
-          <div style={{ fontSize: 14, color: "#555" }}>{toast.message}</div>
+        <div className="toastText">
+          <div className="toastTitle">{toast.title}</div>
+          <div className="toastMessage">{toast.message}</div>
         </div>
 
-        <button onClick={onClose} style={closeBtn}>
+        <button className="toastClose" onClick={onClose}>
           ✕
         </button>
       </div>
     </div>
   );
 }
-
-/* ------------------ Styles ------------------ */
-
-const containerStyle = {
-  position: "fixed",
-  bottom: 20,
-  right: 20,
-  display: "flex",
-  flexDirection: "column",
-  gap: 14,
-  zIndex: 999999,
-};
-
-const cardStyle = {
-  width: 360,
-  background: "#fff",
-  borderRadius: 16,
-  padding: 18,
-  boxShadow: "0 15px 40px rgba(0,0,0,0.15)",
-  animation: "slideIn 0.3s ease",
-};
-
-const iconCircle = {
-  width: 40,
-  height: 40,
-  borderRadius: "50%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: "#fff",
-  fontSize: 20,
-  fontWeight: 900,
-};
-
-const closeBtn = {
-  border: "none",
-  background: "transparent",
-  cursor: "pointer",
-  fontSize: 18,
-  opacity: 0.6,
-};
 
 const toastStyles = {
   success: { color: "#16a34a", icon: "✓" },

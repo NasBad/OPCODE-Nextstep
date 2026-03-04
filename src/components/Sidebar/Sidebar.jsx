@@ -1,23 +1,74 @@
-// src/components/Sidebar/Sidebar.jsx
 import "./sidebar.css";
-import logo from "../../assets/logo-with-name.png";
+import { useEffect, useState } from "react";
+import { useToast } from "../Toast/ToastContext";
 
-export default function Sidebar() {
+import logoFull from "../../assets/logo-with-name.png";
+import logoIcon from "../../assets/small-logo.png";
+
+export default function Sidebar({ collapsed, onToggleCollapsed }) {
+  const { addToast } = useToast();
+
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       <div className="brand">
-        <img src={logo} alt="NextStep Logo" className="brandImage" />
+        <img
+          src={collapsed ? logoIcon : logoFull}
+          alt="NextStep Logo"
+          className="brandImage"
+        />
       </div>
 
       <nav className="nav">
-        <button className="navItem active">📌Job Applications</button>
-        <button className="navItem">📅 Resumes</button>
-        <button className="navItem">🌟 Subscriptions</button>
-        <button className="navItem">📊 Archive</button>
+        <button className="navItem active">
+          <span className="navIcon">📌</span>
+          <span className="navText">Job Applications</span>
+        </button>
+
+        <button
+          className="navItem"
+          onClick={() => addToast("warning", "Warning", "Page Not Ready Yet")}
+        >
+          <span className="navIcon">📅</span>
+          <span className="navText">Resumes</span>
+        </button>
+
+        <button
+          className="navItem"
+          onClick={() => addToast("warning", "Warning", "Page Not Ready Yet")}
+        >
+          <span className="navIcon">🌟</span>
+          <span className="navText">Subscriptions</span>
+        </button>
+
+        <button
+          className="navItem"
+          onClick={() => addToast("warning", "Warning", "Page Not Ready Yet")}
+        >
+          <span className="navIcon">📊</span>
+          <span className="navText">Archive</span>
+        </button>
       </nav>
 
       <div className="sidebarFooter">
-        <button className="navItem">⚙️ Settings</button>
+        <div className="footerRow">
+          <button
+            className="navItem"
+            onClick={() => addToast("warning", "Warning", "Page Not Ready Yet")}
+          >
+            <span className="navIcon">⚙️</span>
+            <span className="navText">Settings</span>
+          </button>
+
+          {/* Arrow button */}
+          <button
+            className="collapseBtn"
+            onClick={onToggleCollapsed}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? "➡️" : "⬅️"}
+          </button>
+        </div>
       </div>
     </aside>
   );
