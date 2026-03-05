@@ -1,8 +1,12 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { createPortal } from "react-dom";
-import "./toast.css";
-
-const ToastContext = createContext();
+import { Box, Button, Typography } from "@mui/material";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
+import { ToastContext } from "./toastStore";
+import { toastSx } from "./Toast.styles";
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
@@ -15,7 +19,6 @@ export function ToastProvider({ children }) {
     (type, title, message) => {
       const id = crypto.randomUUID();
       const newToast = { id, type, title, message };
-
       setToasts((prev) => [...prev, newToast]);
       setTimeout(() => removeToast(id), 4000);
     },
@@ -25,57 +28,42 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={{ addToast }}>
       {children}
-
       {createPortal(
-        <div className="toastContainer">
+        <Box sx={toastSx.container}>
           {toasts.map((toast) => (
-            <ToastCard
-              key={toast.id}
-              toast={toast}
-              onClose={() => removeToast(toast.id)}
-            />
+            <ToastCard key={toast.id} toast={toast} onClose={() => removeToast(toast.id)} />
           ))}
-        </div>,
+        </Box>,
         document.body,
       )}
     </ToastContext.Provider>
   );
 }
 
-export function useToast() {
-  return useContext(ToastContext);
-}
-
-/* ------------------ Toast Card ------------------ */
-
 function ToastCard({ toast, onClose }) {
   const config = toastStyles[toast.type] || toastStyles.warning;
+  const Icon = config.icon;
 
   return (
-    <div
-      className={`toastCard toast-${toast.type}`}
-      style={{ borderLeftColor: config.color }}
-    >
-      <div className="toastContent">
-        <div className="toastIcon" style={{ background: config.color }}>
-          {config.icon}
-        </div>
-
-        <div className="toastText">
-          <div className="toastTitle">{toast.title}</div>
-          <div className="toastMessage">{toast.message}</div>
-        </div>
-
-        <button className="toastClose" onClick={onClose}>
-          ✕
-        </button>
-      </div>
-    </div>
+    <Box sx={toastSx.card(config.color)}>
+      <Box sx={toastSx.content}>
+        <Box sx={toastSx.iconWrap(config.color)}>
+          <Icon sx={{ fontSize: 20, color: "#fff" }} />
+        </Box>
+        <Box sx={toastSx.text}>
+          <Typography sx={toastSx.title}>{toast.title}</Typography>
+          <Typography sx={toastSx.message}>{toast.message}</Typography>
+        </Box>
+        <Button onClick={onClose} sx={toastSx.closeBtn}>
+          <CloseRoundedIcon fontSize="small" />
+        </Button>
+      </Box>
+    </Box>
   );
 }
 
 const toastStyles = {
-  success: { color: "#16a34a", icon: "✓" },
-  error: { color: "#dc2626", icon: "✕" },
-  warning: { color: "#d97706", icon: "!" },
+  success: { color: "#16a34a", icon: CheckCircleRoundedIcon },
+  error: { color: "#dc2626", icon: ErrorRoundedIcon },
+  warning: { color: "#d97706", icon: WarningRoundedIcon },
 };
