@@ -1,16 +1,10 @@
+import { Box } from "@mui/material";
 import StatusColumn from "../../components/StatusColumn/StatusColumn";
+import { kanbanBoardSx } from "./KanbanBoard.styles";
 
-export default function KanbanBoard({
-  statuses,
-  jobsByStatus,
-  onDelete,
-  onEdit,
-  onMoveTo,
-  onAdd,
-  onSelect,
-}) {
+export default function KanbanBoard({ statuses, jobsByStatus, onDelete, onEdit, onMoveTo, onAdd, onSelect }) {
   return (
-    <div className="dashboardBoard">
+    <Box sx={kanbanBoardSx.board}>
       {statuses.map((status) => (
         <StatusColumn
           key={status}
@@ -23,6 +17,6 @@ export default function KanbanBoard({
           onSelect={onSelect}
         />
       ))}
-    </div>
+    </Box>
   );
 }

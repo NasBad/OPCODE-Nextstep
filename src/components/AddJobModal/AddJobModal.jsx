@@ -1,6 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import {
+  Box,
+  Button,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { STATUSES } from "../../constants/statuses";
-import "./addjobmodal.css";
+import { addJobModalSx } from "./AddJobModal.styles";
 
 export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
   const [companyName, setCompanyName] = useState("");
@@ -10,11 +20,6 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
   const [workType, setWorkType] = useState("hybrid");
   const [tagsText, setTagsText] = useState("");
   const [jobUrl, setJobUrl] = useState("");
-
-  // keep status synced when opening from a specific column
-  useEffect(() => {
-    if (open) setStatus(defaultStatus ?? STATUSES[0]);
-  }, [open, defaultStatus]);
 
   if (!open) return null;
 
@@ -30,7 +35,6 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const trimmedCompany = companyName.trim();
     const trimmedTitle = jobTitle.trim();
     if (!trimmedCompany || !trimmedTitle) return;
@@ -59,115 +63,93 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
   };
 
   return (
-    <div className="ajmOverlay" onClick={onClose}>
-      <div className="ajmCard" onClick={(e) => e.stopPropagation()}>
-        <div className="ajmHeader">
-          <h2 className="ajmTitle">Add Job</h2>
+    <Modal open={open} onClose={onClose}>
+      <Box onClick={onClose} sx={addJobModalSx.overlay}>
+        <Box component="form" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} sx={addJobModalSx.card}>
+          <Box sx={addJobModalSx.header}>
+            <Typography sx={addJobModalSx.title}>Add Job</Typography>
+            <Button type="button" onClick={onClose} sx={addJobModalSx.closeBtn}>
+              <CloseRoundedIcon fontSize="small" />
+            </Button>
+          </Box>
 
-          <button type="button" className="ajmClose" onClick={onClose}>
-            ✕
-          </button>
-        </div>
-
-        <form className="ajmForm" onSubmit={handleSubmit}>
-          <label className="ajmLabel">
-            Job Title *
-            <input
-              className="ajmInput"
+          <Field label="Job Title *">
+            <TextField
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
               placeholder="e.g. Frontend Developer"
+              size="small"
+              sx={addJobModalSx.input}
             />
-          </label>
+          </Field>
 
-          <label className="ajmLabel">
-            Company Name *
-            <input
-              className="ajmInput"
+          <Field label="Company Name *">
+            <TextField
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
               placeholder="e.g. Check Point"
+              size="small"
+              sx={addJobModalSx.input}
             />
-          </label>
+          </Field>
 
-          <div className="ajmGrid2">
-            <label className="ajmLabel">
-              Status
-              <select
-                className="ajmInput"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
+          <Box sx={addJobModalSx.grid2}>
+            <Field label="Status">
+              <Select value={status} onChange={(e) => setStatus(e.target.value)} size="small" sx={addJobModalSx.input}>
                 {STATUSES.map((s) => (
-                  <option key={s} value={s}>
+                  <MenuItem key={s} value={s}>
                     {s}
-                  </option>
+                  </MenuItem>
                 ))}
-              </select>
-            </label>
+              </Select>
+            </Field>
+            <Field label="Work Type">
+              <Select value={workType} onChange={(e) => setWorkType(e.target.value)} size="small" sx={addJobModalSx.input}>
+                <MenuItem value="remote">remote</MenuItem>
+                <MenuItem value="hybrid">hybrid</MenuItem>
+                <MenuItem value="on site">on site</MenuItem>
+              </Select>
+            </Field>
+          </Box>
 
-            <label className="ajmLabel">
-              Work Type
-              <select
-                className="ajmInput"
-                value={workType}
-                onChange={(e) => setWorkType(e.target.value)}
-              >
-                <option value="remote">remote</option>
-                <option value="hybrid">hybrid</option>
-                <option value="on site">on site</option>
-              </select>
-            </label>
-          </div>
+          <Field label="Location">
+            <TextField value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Tel Aviv" size="small" sx={addJobModalSx.input} />
+          </Field>
 
-          <label className="ajmLabel">
-            Location
-            <input
-              className="ajmInput"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g. Tel Aviv"
-            />
-          </label>
+          <Field label="Job URL">
+            <TextField value={jobUrl} onChange={(e) => setJobUrl(e.target.value)} placeholder="https://..." size="small" sx={addJobModalSx.input} />
+          </Field>
 
-          <label className="ajmLabel">
-            Job URL
-            <input
-              className="ajmInput"
-              value={jobUrl}
-              onChange={(e) => setJobUrl(e.target.value)}
-              placeholder="https://..."
-            />
-          </label>
+          <Field label="Tags (comma separated)">
+            <TextField value={tagsText} onChange={(e) => setTagsText(e.target.value)} placeholder="React, JavaScript, Node" size="small" sx={addJobModalSx.input} />
+          </Field>
 
-          <label className="ajmLabel">
-            Tags (comma separated)
-            <input
-              className="ajmInput"
-              value={tagsText}
-              onChange={(e) => setTagsText(e.target.value)}
-              placeholder="React, JavaScript, Node"
-            />
-          </label>
-
-          <div className="ajmActions">
-            <button
+          <Box sx={addJobModalSx.actions}>
+            <Button
               type="button"
-              className="ajmBtnSecondary"
               onClick={() => {
                 reset();
                 onClose();
               }}
+              sx={addJobModalSx.secondaryBtn}
             >
               Cancel
-            </button>
-
-            <button type="submit" className="ajmBtnPrimary">
+            </Button>
+            <Button type="submit" sx={addJobModalSx.primaryBtn}>
               Add
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+    </Modal>
+  );
+}
+
+function Field({ label, children }) {
+  return (
+    <Box sx={addJobModalSx.field}>
+      <Typography sx={addJobModalSx.label}>{label}</Typography>
+      {children}
+    </Box>
   );
 }

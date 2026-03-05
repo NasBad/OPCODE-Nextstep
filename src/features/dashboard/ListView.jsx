@@ -1,15 +1,28 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  Paper,
+  Typography,
+} from "@mui/material";
+import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
+import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
+import { listViewSx, getStatusColor } from "./ListView.styles";
 
 export default function ListView({
   jobs,
   statuses,
   onMoveTo,
   onDelete,
-  onSelect, // opens drawer
-  onEdit, // optional (you can pass editJob)
-  onExport, // optional (selectedJobs) => ...
+  onSelect,
+  onEdit,
+  onExport,
 }) {
-  // group by status
   const grouped = useMemo(() => {
     const map = {};
     statuses.forEach((s) => (map[s] = []));
@@ -21,74 +34,53 @@ export default function ListView({
     return map;
   }, [jobs, statuses]);
 
-  // collapsible sections
   const [collapsed, setCollapsed] = useState(() => {
     const init = {};
     statuses.forEach((s) => (init[s] = false));
     return init;
   });
 
-  // selected rows
   const [selectedIds, setSelectedIds] = useState(() => new Set());
-
-  // close menus on outside click
   const [openMenuId, setOpenMenuId] = useState(null);
-  const containerRef = useRef(null);
-
-  // ✅ NEW: bulk move menu
   const [bulkMoveOpen, setBulkMoveOpen] = useState(false);
+  const containerRef = useRef(null);
   const bulkMoveRef = useRef(null);
 
   useEffect(() => {
     const onDocClick = (e) => {
-      // close kebab + bulk move when clicking outside
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setOpenMenuId(null);
         setBulkMoveOpen(false);
         return;
       }
-
-      // close bulk menu if click is outside it
-      if (bulkMoveRef.current && !bulkMoveRef.current.contains(e.target)) {
-        setBulkMoveOpen(false);
-      }
+      if (bulkMoveRef.current && !bulkMoveRef.current.contains(e.target)) setBulkMoveOpen(false);
     };
 
     document.addEventListener("mousedown", onDocClick);
     return () => document.removeEventListener("mousedown", onDocClick);
   }, []);
 
-  // If jobs list changes, remove ids that no longer exist
-  useEffect(() => {
-    const ids = new Set(jobs.map((j) => j.id));
-    setSelectedIds((prev) => {
-      const next = new Set([...prev].filter((id) => ids.has(id)));
-      return next;
-    });
-  }, [jobs]);
-
-  const selectedCount = selectedIds.size;
-
-  const selectedJobs = useMemo(() => {
-    const idSet = selectedIds;
-    return jobs.filter((j) => idSet.has(j.id));
+  const activeSelectedIds = useMemo(() => {
+    const validIds = new Set(jobs.map((j) => j.id));
+    return new Set([...selectedIds].filter((id) => validIds.has(id)));
   }, [jobs, selectedIds]);
 
-  const toggleRow = (id) => {
+  const selectedJobs = useMemo(() => jobs.filter((j) => activeSelectedIds.has(j.id)), [jobs, activeSelectedIds]);
+  const selectedCount = activeSelectedIds.size;
+
+  const toggleRow = (id) =>
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
-  };
 
   const clearSelection = () => setSelectedIds(new Set());
 
   const isAllSelectedInSection = (status) => {
     const list = grouped[status] ?? [];
     if (!list.length) return false;
-    return list.every((j) => selectedIds.has(j.id));
+    return list.every((j) => activeSelectedIds.has(j.id));
   };
 
   const toggleSelectAllInSection = (status) => {
@@ -116,260 +108,186 @@ export default function ListView({
   const formatDate = (iso) => {
     if (!iso) return "";
     try {
-      const d = new Date(iso);
-      return d.toLocaleDateString(undefined, {
-        month: "short",
-        day: "2-digit",
-      });
+      return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "2-digit" });
     } catch {
       return "";
     }
   };
 
   return (
-    <div className="dashboardListView" ref={containerRef}>
+    <Box ref={containerRef} sx={listViewSx.root}>
       {statuses.map((status) => {
         const list = grouped[status] ?? [];
         const count = list.length;
         const isCollapsed = collapsed[status];
+        const statusColor = getStatusColor(status);
 
         return (
-          <div
-            className={`lvSection status-${status.toLowerCase().replace(" ", "")}`}
-            key={status}
-          >
-            <button
+          <Box key={status} sx={listViewSx.section}>
+            <Button
               type="button"
-              className="lvSectionHeader"
-              onClick={() =>
-                setCollapsed((p) => ({ ...p, [status]: !p[status] }))
-              }
+              onClick={() => setCollapsed((p) => ({ ...p, [status]: !p[status] }))}
               aria-label={`Toggle ${status}`}
+              sx={listViewSx.sectionHeader}
             >
-              <span className={`lvChevron ${isCollapsed ? "isCollapsed" : ""}`}>
-                ▾
-              </span>
-              <span
-                className={`lvSectionTitle status-${status.toLowerCase().replace(" ", "")}`}
-              >
+              <ExpandMoreRoundedIcon sx={listViewSx.chevron(isCollapsed)} />
+              <Typography component="span" sx={listViewSx.sectionTitle(statusColor)}>
                 {status}
-              </span>
-              <span className="lvSectionCount">{count}</span>
-            </button>
+              </Typography>
+              <Typography component="span" sx={listViewSx.sectionCount}>
+                {count}
+              </Typography>
+            </Button>
 
             {!isCollapsed && (
-              <div className="lvTable">
+              <Paper sx={listViewSx.table}>
                 {count > 0 && (
-                  <div className="lvRow lvHead">
-                    <div className="lvCell check">
-                      <input
-                        type="checkbox"
+                  <Box sx={listViewSx.headRow}>
+                    <Box sx={listViewSx.checkCell}>
+                      <Checkbox
                         checked={isAllSelectedInSection(status)}
                         onChange={() => toggleSelectAllInSection(status)}
-                        aria-label={`Select all in ${status}`}
+                        size="small"
+                        sx={listViewSx.checkbox}
                       />
-                    </div>
-                    <div className="lvCell main">Job</div>
-                    <div className="lvCell tags">Tags</div>
-                    <div className="lvCell date">Date</div>
-                    <div className="lvCell menu" />
-                  </div>
+                    </Box>
+                    <Typography sx={listViewSx.headText}>Job</Typography>
+                    <Typography sx={listViewSx.headTextTags}>Tags</Typography>
+                    <Typography sx={listViewSx.headTextDate}>Date</Typography>
+                    <Box />
+                  </Box>
                 )}
 
                 {count === 0 ? (
-                  <div className="lvEmpty">No jobs here yet.</div>
+                  <Typography sx={listViewSx.empty}>No jobs here yet.</Typography>
                 ) : (
-                  list.map((job) => {
-                    const checked = selectedIds.has(job.id);
+                  list.map((job, index) => {
+                    const checked = activeSelectedIds.has(job.id);
                     const tags = Array.isArray(job.tags) ? job.tags : [];
-
                     return (
-                      <div
+                      <Box
                         key={job.id}
-                        className={`lvRow ${checked ? "isSelected" : ""}`}
-                        onClick={() => onSelect(job)}
                         role="button"
                         tabIndex={0}
+                        onClick={() => onSelect(job)}
                         onKeyDown={(e) => e.key === "Enter" && onSelect(job)}
+                        sx={listViewSx.row(checked, index)}
                       >
-                        <div
-                          className="lvCell check"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <input
-                            type="checkbox"
+                        <Box sx={listViewSx.checkCell} onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
                             checked={checked}
                             onChange={() => toggleRow(job.id)}
-                            aria-label={`Select ${job.companyName}`}
+                            size="small"
+                            sx={listViewSx.checkbox}
                           />
-                        </div>
+                        </Box>
 
-                        <div className="lvCell main">
-                          <div className="lvTitleRow">
-                            <span className="lvCompany">{job.companyName}</span>
-                            <span className="lvRole">{job.jobTitle}</span>
-                            <span className="lvMeta">
+                        <Box sx={{ minWidth: 0 }}>
+                          <Box sx={listViewSx.titleRow}>
+                            <Typography component="span" sx={listViewSx.company}>
+                              {job.companyName}
+                            </Typography>
+                            <Typography component="span" sx={listViewSx.role}>
+                              {job.jobTitle}
+                            </Typography>
+                            <Typography component="span" sx={listViewSx.meta}>
                               {job.location ? `, ${job.location}` : ""}
-                              {job.workType ? ` · ${job.workType}` : ""}
-                            </span>
-                          </div>
-                        </div>
+                              {job.workType ? ` - ${job.workType}` : ""}
+                            </Typography>
+                          </Box>
+                        </Box>
 
-                        <div className="lvCell tags">
-                          <div className="lvTagWrap">
-                            {tags.slice(0, 6).map((t) => (
-                              <span key={t} className="lvTag" data-tag={t}>
-                                {t}
-                              </span>
-                            ))}
-                            {tags.length > 6 && (
-                              <span className="lvTag more">
-                                +{tags.length - 6}
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                        <Box sx={listViewSx.tagsWrap}>
+                          {tags.slice(0, 6).map((t) => (
+                            <Box key={t} component="span" sx={listViewSx.tag(statusColor)}>
+                              {t}
+                            </Box>
+                          ))}
+                          {tags.length > 6 && (
+                            <Box component="span" sx={listViewSx.tagMore(statusColor)}>
+                              +{tags.length - 6}
+                            </Box>
+                          )}
+                        </Box>
 
-                        <div className="lvCell date">
-                          {formatDate(job.updatedAt ?? job.createdAt)}
-                        </div>
+                        <Typography sx={listViewSx.date}>{formatDate(job.updatedAt ?? job.createdAt)}</Typography>
 
-                        <div
-                          className="lvCell menu"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <button
+                        <Box sx={{ position: "relative" }} onClick={(e) => e.stopPropagation()}>
+                          <Button
                             type="button"
-                            className="lvKebab"
                             aria-label="Row actions"
-                            onClick={() =>
-                              setOpenMenuId((p) =>
-                                p === job.id ? null : job.id,
-                              )
-                            }
+                            onClick={() => setOpenMenuId((p) => (p === job.id ? null : job.id))}
+                            sx={listViewSx.kebabBtn}
                           >
-                            ⋮
-                          </button>
+                            <MoreVertRoundedIcon fontSize="small" />
+                          </Button>
 
                           {openMenuId === job.id && (
-                            <div className="lvMenu">
-                              <button
-                                type="button"
-                                className="lvMenuItem"
-                                onClick={() => {
-                                  setOpenMenuId(null);
-                                  onEdit?.(job);
-                                }}
-                              >
-                                ✏️ Edit
-                              </button>
-
-                              <div className="lvMenuDivider" />
-
-                              <div className="lvMenuLabel">Move to</div>
-                              <div className="lvMoveGrid">
+                            <Box sx={listViewSx.rowMenu}>
+                              <Button fullWidth startIcon={<EditRoundedIcon fontSize="small" />} onClick={() => { setOpenMenuId(null); onEdit?.(job); }} sx={listViewSx.menuItem}>
+                                Edit
+                              </Button>
+                              <Divider sx={{ my: 1, borderColor: "var(--border)" }} />
+                              <Typography sx={listViewSx.menuLabel}>Move to</Typography>
+                              <Box sx={listViewSx.moveGrid}>
                                 {statuses.map((s) => (
-                                  <button
-                                    key={s}
-                                    type="button"
-                                    className="lvMoveBtn"
-                                    onClick={() => {
-                                      setOpenMenuId(null);
-                                      onMoveTo(job.id, s);
-                                    }}
-                                  >
+                                  <Button key={s} onClick={() => { setOpenMenuId(null); onMoveTo(job.id, s); }} sx={listViewSx.moveBtn}>
                                     {s}
-                                  </button>
+                                  </Button>
                                 ))}
-                              </div>
-
-                              <div className="lvMenuDivider" />
-
-                              <button
-                                type="button"
-                                className="lvMenuItem danger"
-                                onClick={() => {
-                                  setOpenMenuId(null);
-                                  onDelete(job.id);
-                                }}
-                              >
-                                🗑️ Delete
-                              </button>
-                            </div>
+                              </Box>
+                              <Divider sx={{ my: 1, borderColor: "var(--border)" }} />
+                              <Button fullWidth startIcon={<DeleteRoundedIcon fontSize="small" />} onClick={() => { setOpenMenuId(null); onDelete(job.id); }} sx={listViewSx.dangerMenuItem}>
+                                Delete
+                              </Button>
+                            </Box>
                           )}
-                        </div>
-                      </div>
+                        </Box>
+                      </Box>
                     );
                   })
                 )}
-              </div>
+              </Paper>
             )}
-          </div>
+          </Box>
         );
       })}
 
-      {/* ✅ Bulk Action Bar */}
       {selectedCount > 0 && (
-        <div className="lvBulkBar">
-          <div className="lvBulkLeft">
-            <span className="lvBulkCount">{selectedCount} Selected</span>
-            <button
-              type="button"
-              className="lvBulkGhost"
-              onClick={clearSelection}
-            >
+        <Paper sx={listViewSx.bulkBar}>
+          <Box sx={listViewSx.bulkLeft}>
+            <Typography sx={{ fontWeight: 900 }}>{selectedCount} Selected</Typography>
+            <Button onClick={clearSelection} sx={listViewSx.ghostBtn}>
               Clear
-            </button>
-          </div>
+            </Button>
+          </Box>
 
-          <div className="lvBulkRight">
-            {/* ✅ REPLACED: native <select> with themeable menu */}
-            <div className="lvBulkMove" ref={bulkMoveRef}>
-              <button
-                type="button"
-                className="lvBulkBtn"
-                onClick={() => setBulkMoveOpen((v) => !v)}
-              >
+          <Box sx={listViewSx.bulkRight}>
+            <Box sx={{ position: "relative" }} ref={bulkMoveRef}>
+              <Button onClick={() => setBulkMoveOpen((v) => !v)} startIcon={<SwapHorizRoundedIcon />} sx={listViewSx.ghostBtn}>
                 Move To...
-              </button>
-
+              </Button>
               {bulkMoveOpen && (
-                <div className="lvBulkMoveMenu">
+                <Box sx={listViewSx.bulkMoveMenu}>
                   {statuses.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      className="lvBulkMoveItem"
-                      onClick={() => {
-                        setBulkMoveOpen(false);
-                        bulkMove(s);
-                      }}
-                    >
+                    <Button key={s} fullWidth onClick={() => { setBulkMoveOpen(false); bulkMove(s); }} sx={listViewSx.bulkMoveItem}>
                       {s}
-                    </button>
+                    </Button>
                   ))}
-                </div>
+                </Box>
               )}
-            </div>
+            </Box>
 
-            <button type="button" className="lvBulkDanger" onClick={bulkDelete}>
+            <Button onClick={bulkDelete} startIcon={<DeleteRoundedIcon />} sx={listViewSx.bulkDangerBtn}>
               Delete
-            </button>
+            </Button>
 
-            <button
-              type="button"
-              className="lvBulkBtn"
-              onClick={() => onExport?.(selectedJobs)}
-              disabled={!onExport}
-              title={
-                !onExport ? "Hook up onExport to enable" : "Export selected"
-              }
-            >
+            <Button onClick={() => onExport?.(selectedJobs)} disabled={!onExport} sx={listViewSx.ghostBtn}>
               Export
-            </button>
-          </div>
-        </div>
+            </Button>
+          </Box>
+        </Paper>
       )}
-    </div>
+    </Box>
   );
 }
