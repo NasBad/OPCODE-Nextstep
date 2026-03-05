@@ -1,12 +1,13 @@
 // src/pages/Dashboard.jsx
 
 import { useMemo, useState } from "react";
+import { Box } from "@mui/material";
 import { STATUSES } from "../constants/statuses";
 import { jobsMock } from "../data/jobsMock";
 import AddJobModal from "../components/AddJobModal/AddJobModal";
-import { useToast } from "../components/Toast/ToastContext";
+import { useToast } from "../components/Toast/toastStore";
 import JobDetailsDrawer from "../components/JobDetailsDrawer/JobDetailsDrawer";
-import "./dashboard.css";
+import { dashboardPageSx } from "./Dashboard.styles";
 
 // ✅ NEW (separated views)
 import DashboardHeader from "../features/dashboard/DashboardHeader";
@@ -123,7 +124,7 @@ export default function Dashboard({ searchQuery = "" }) {
     }
   };
 
-  const editJob = (job) => {
+  const editJob = () => {
     addToast("warning", "Warning", "Feature Not Ready Yet");
   };
 
@@ -134,7 +135,7 @@ export default function Dashboard({ searchQuery = "" }) {
   };
 
   return (
-    <div className="dashboardPage">
+    <Box sx={dashboardPageSx.root}>
       <DashboardHeader
         viewMode={viewMode}
         onToggleView={() =>
@@ -181,6 +182,6 @@ export default function Dashboard({ searchQuery = "" }) {
         job={selectedJob}
         onClose={() => setDrawerOpen(false)}
       />
-    </div>
+    </Box>
   );
 }

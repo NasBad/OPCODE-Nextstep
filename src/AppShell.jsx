@@ -1,43 +1,29 @@
-// src/AppShell.jsx
 import { useEffect, useState } from "react";
+import { Box } from "@mui/material";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Topbar from "./components/Topbar/Topbar";
-import "./appShell.css";
+import { appShellSx } from "./AppShell.styles";
 
-export default function AppShell({
-  children,
-  searchValue,
-  onSearchChange,
-  onToggleTheme,
-  theme,
-}) {
+export default function AppShell({ children, searchValue, onSearchChange }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     return localStorage.getItem("sidebar") === "collapsed";
   });
 
   useEffect(() => {
-    localStorage.setItem(
-      "sidebar",
-      sidebarCollapsed ? "collapsed" : "expanded",
-    );
+    localStorage.setItem("sidebar", sidebarCollapsed ? "collapsed" : "expanded");
   }, [sidebarCollapsed]);
 
   const toggleSidebar = () => setSidebarCollapsed((c) => !c);
 
   return (
-    <div className={`shell ${sidebarCollapsed ? "sidebarCollapsed" : ""}`}>
+    <Box sx={appShellSx.root(sidebarCollapsed)}>
       <Sidebar collapsed={sidebarCollapsed} onToggleCollapsed={toggleSidebar} />
-
-      <div className="shellMain">
-        <Topbar
-          searchValue={searchValue}
-          onSearchChange={onSearchChange}
-          onToggleTheme={onToggleTheme}
-          theme={theme}
-        />
-
-        <main className="shellContent">{children}</main>
-      </div>
-    </div>
+      <Box sx={appShellSx.main}>
+        <Topbar searchValue={searchValue} onSearchChange={onSearchChange} />
+        <Box component="main" sx={appShellSx.content}>
+          {children}
+        </Box>
+      </Box>
+    </Box>
   );
 }
