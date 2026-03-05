@@ -1,44 +1,38 @@
-// src/components/Topbar/Topbar.jsx
-import "./topbar.css";
+import { Box, IconButton, InputBase, Typography } from "@mui/material";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
+import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
 import ProfileMenu from "../ProfileMenu/ProfileMenu";
 import avatar from "../../assets/avatar.png";
 import useTheme from "../../hooks/useTheme";
+import { topbarSx } from "./Topbar.styles";
 
 export default function Topbar({ searchValue, onSearchChange }) {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="topbar">
-      <div className="topbarLeft">
-        <div className="pageTitle">Job Application</div>
-        <div className="pageSub"></div>
-      </div>
+    <Box component="header" sx={topbarSx.root}>
+      <Box>
+        <Typography sx={topbarSx.title}>Job Application</Typography>
+      </Box>
 
-      <div className="topbarRight">
-        <button className="ghostBtn" onClick={toggleTheme} title="Toggle theme">
-          {theme === "dark" ? "🌙" : "☀️"}
-        </button>
+      <Box sx={topbarSx.right}>
+        <IconButton onClick={toggleTheme} title="Toggle theme" sx={topbarSx.ghostBtn}>
+          {theme === "dark" ? <DarkModeRoundedIcon /> : <LightModeRoundedIcon />}
+        </IconButton>
 
-        <div className="searchBox">
-          <span className="searchIcon">🔎</span>
-          <input
+        <Box sx={topbarSx.searchBox}>
+          <SearchRoundedIcon sx={topbarSx.searchIcon} />
+          <InputBase
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by title, company, tags..."
+            sx={topbarSx.searchInput}
           />
-        </div>
+        </Box>
 
-        <ProfileMenu
-          name="Naseem Badran"
-          avatarSrc={avatar}
-          onAction={(key) => {
-            // later replace alerts with toasts
-            if (key === "logout") alert("logout clicked");
-            if (key === "profile") alert("profile clicked");
-            if (key === "settings") alert("settings clicked");
-          }}
-        />
-      </div>
-    </header>
+        <ProfileMenu name="Naseem Badran" avatarSrc={avatar} />
+      </Box>
+    </Box>
   );
 }
