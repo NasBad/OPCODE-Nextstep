@@ -1,14 +1,14 @@
 import { Box, Button, Typography } from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import BookmarksRoundedIcon from "@mui/icons-material/BookmarksRounded";
-import SendRoundedIcon from "@mui/icons-material/SendRounded";
-import ForumRoundedIcon from "@mui/icons-material/ForumRounded";
-import WorkspacePremiumRoundedIcon from "@mui/icons-material/WorkspacePremiumRounded";
 import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import JobCard from "../JobCard/JobCard";
 import useTheme from "../../hooks/useTheme";
 import { statusColumnSx } from "./StatusColumn.styles";
+import EmojiEventsOutlinedIcon from "@mui/icons-material/EmojiEventsOutlined";
+import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
+import NearMeOutlinedIcon from "@mui/icons-material/NearMeOutlined";
+import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 
 export default function StatusColumn({
   status,
@@ -97,10 +97,12 @@ function getEmptyText(status) {
 function getHeaderTheme(status) {
   const s = status.toLowerCase();
   const make = (color, icon) => ({ color, icon });
-  if (s.includes("wishlist")) return make("#7c3aed", BookmarksRoundedIcon);
-  if (s.includes("applied")) return make("#ef4444", SendRoundedIcon);
-  if (s.includes("interview")) return make("#f59e0b", ForumRoundedIcon);
-  if (s.includes("offer")) return make("#10b981", WorkspacePremiumRoundedIcon);
+  if (s.includes("wishlist"))
+    return make("#7c3aed", BookmarkBorderOutlinedIcon);
+  if (s.includes("applied")) return make("#ef4444", NearMeOutlinedIcon);
+  if (s.includes("interview"))
+    return make("#f59e0b", ChatBubbleOutlineOutlinedIcon);
+  if (s.includes("offer")) return make("#10b981", EmojiEventsOutlinedIcon);
   return make("#94a3b8", PushPinRoundedIcon);
 }
 
@@ -114,7 +116,7 @@ function getEmptyTheme(status, mode) {
       gradient: isDark
         ? "linear-gradient(135deg, rgba(124,58,237,0.22), rgba(20,20,30,1))"
         : "linear-gradient(135deg, rgba(124,58,237,0.22), rgba(255,255,255,1))",
-      icon: BookmarksRoundedIcon,
+      icon: BookmarkBorderOutlinedIcon,
     };
   if (s.includes("applied"))
     return {
@@ -122,7 +124,7 @@ function getEmptyTheme(status, mode) {
       gradient: isDark
         ? "linear-gradient(135deg, rgba(239,68,68,0.22), rgba(20,20,30,1))"
         : "linear-gradient(135deg, rgba(239,68,68,0.22), rgba(255,255,255,1))",
-      icon: SendRoundedIcon,
+      icon: NearMeOutlinedIcon,
     };
   if (s.includes("interview"))
     return {
@@ -130,7 +132,7 @@ function getEmptyTheme(status, mode) {
       gradient: isDark
         ? "linear-gradient(135deg, rgba(245,158,11,0.22), rgba(20,20,30,1))"
         : "linear-gradient(135deg, rgba(245,158,11,0.22), rgba(255,255,255,1))",
-      icon: ForumRoundedIcon,
+      icon: ChatBubbleOutlineOutlinedIcon,
     };
   if (s.includes("offer"))
     return {
@@ -138,7 +140,7 @@ function getEmptyTheme(status, mode) {
       gradient: isDark
         ? "linear-gradient(135deg, rgba(16,185,129,0.22), rgba(20,20,30,1))"
         : "linear-gradient(135deg, rgba(16,185,129,0.22), rgba(255,255,255,1))",
-      icon: WorkspacePremiumRoundedIcon,
+      icon: EmojiEventsOutlinedIcon,
     };
   return {
     border: "#94a3b8",
