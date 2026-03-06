@@ -1,17 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Box,
-  Button,
-  Checkbox,
-  Divider,
-  Paper,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Checkbox, Paper, Typography } from "@mui/material";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
-import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import EastOutlinedIcon from "@mui/icons-material/EastOutlined";
 import { listViewSx, getStatusColor } from "./ListView.styles";
 
 export default function ListView({
@@ -42,6 +35,7 @@ export default function ListView({
 
   const [selectedIds, setSelectedIds] = useState(() => new Set());
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [openMoveId, setOpenMoveId] = useState(null);
   const [bulkMoveOpen, setBulkMoveOpen] = useState(false);
   const containerRef = useRef(null);
   const bulkMoveRef = useRef(null);
@@ -50,10 +44,12 @@ export default function ListView({
     const onDocClick = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setOpenMenuId(null);
+        setOpenMoveId(null);
         setBulkMoveOpen(false);
         return;
       }
-      if (bulkMoveRef.current && !bulkMoveRef.current.contains(e.target)) setBulkMoveOpen(false);
+      if (bulkMoveRef.current && !bulkMoveRef.current.contains(e.target))
+        setBulkMoveOpen(false);
     };
 
     document.addEventListener("mousedown", onDocClick);
@@ -65,7 +61,10 @@ export default function ListView({
     return new Set([...selectedIds].filter((id) => validIds.has(id)));
   }, [jobs, selectedIds]);
 
-  const selectedJobs = useMemo(() => jobs.filter((j) => activeSelectedIds.has(j.id)), [jobs, activeSelectedIds]);
+  const selectedJobs = useMemo(
+    () => jobs.filter((j) => activeSelectedIds.has(j.id)),
+    [jobs, activeSelectedIds],
+  );
   const selectedCount = activeSelectedIds.size;
 
   const toggleRow = (id) =>
@@ -108,7 +107,10 @@ export default function ListView({
   const formatDate = (iso) => {
     if (!iso) return "";
     try {
-      return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "2-digit" });
+      return new Date(iso).toLocaleDateString(undefined, {
+        month: "short",
+        day: "2-digit",
+      });
     } catch {
       return "";
     }
@@ -126,12 +128,17 @@ export default function ListView({
           <Box key={status} sx={listViewSx.section}>
             <Button
               type="button"
-              onClick={() => setCollapsed((p) => ({ ...p, [status]: !p[status] }))}
+              onClick={() =>
+                setCollapsed((p) => ({ ...p, [status]: !p[status] }))
+              }
               aria-label={`Toggle ${status}`}
               sx={listViewSx.sectionHeader}
             >
               <ExpandMoreRoundedIcon sx={listViewSx.chevron(isCollapsed)} />
-              <Typography component="span" sx={listViewSx.sectionTitle(statusColor)}>
+              <Typography
+                component="span"
+                sx={listViewSx.sectionTitle(statusColor)}
+              >
                 {status}
               </Typography>
               <Typography component="span" sx={listViewSx.sectionCount}>
@@ -159,7 +166,9 @@ export default function ListView({
                 )}
 
                 {count === 0 ? (
-                  <Typography sx={listViewSx.empty}>No jobs here yet.</Typography>
+                  <Typography sx={listViewSx.empty}>
+                    No jobs here yet.
+                  </Typography>
                 ) : (
                   list.map((job, index) => {
                     const checked = activeSelectedIds.has(job.id);
@@ -173,7 +182,10 @@ export default function ListView({
                         onKeyDown={(e) => e.key === "Enter" && onSelect(job)}
                         sx={listViewSx.row(checked, index)}
                       >
-                        <Box sx={listViewSx.checkCell} onClick={(e) => e.stopPropagation()}>
+                        <Box
+                          sx={listViewSx.checkCell}
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <Checkbox
                             checked={checked}
                             onChange={() => toggleRow(job.id)}
@@ -184,7 +196,10 @@ export default function ListView({
 
                         <Box sx={{ minWidth: 0 }}>
                           <Box sx={listViewSx.titleRow}>
-                            <Typography component="span" sx={listViewSx.company}>
+                            <Typography
+                              component="span"
+                              sx={listViewSx.company}
+                            >
                               {job.companyName}
                             </Typography>
                             <Typography component="span" sx={listViewSx.role}>
@@ -199,24 +214,41 @@ export default function ListView({
 
                         <Box sx={listViewSx.tagsWrap}>
                           {tags.slice(0, 6).map((t) => (
-                            <Box key={t} component="span" sx={listViewSx.tag(statusColor)}>
+                            <Box
+                              key={t}
+                              component="span"
+                              sx={listViewSx.tag(statusColor)}
+                            >
                               {t}
                             </Box>
                           ))}
                           {tags.length > 6 && (
-                            <Box component="span" sx={listViewSx.tagMore(statusColor)}>
+                            <Box
+                              component="span"
+                              sx={listViewSx.tagMore(statusColor)}
+                            >
                               +{tags.length - 6}
                             </Box>
                           )}
                         </Box>
 
-                        <Typography sx={listViewSx.date}>{formatDate(job.updatedAt ?? job.createdAt)}</Typography>
+                        <Typography sx={listViewSx.date}>
+                          {formatDate(job.updatedAt ?? job.createdAt)}
+                        </Typography>
 
-                        <Box sx={{ position: "relative" }} onClick={(e) => e.stopPropagation()}>
+                        <Box
+                          sx={{ position: "relative" }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <Button
                             type="button"
                             aria-label="Row actions"
-                            onClick={() => setOpenMenuId((p) => (p === job.id ? null : job.id))}
+                            onClick={() => {
+                              setOpenMenuId((p) =>
+                                p === job.id ? null : job.id,
+                              );
+                              setOpenMoveId(null);
+                            }}
                             sx={listViewSx.kebabBtn}
                           >
                             <MoreVertRoundedIcon fontSize="small" />
@@ -224,22 +256,70 @@ export default function ListView({
 
                           {openMenuId === job.id && (
                             <Box sx={listViewSx.rowMenu}>
-                              <Button fullWidth startIcon={<EditRoundedIcon fontSize="small" />} onClick={() => { setOpenMenuId(null); onEdit?.(job); }} sx={listViewSx.menuItem}>
-                                Edit
-                              </Button>
-                              <Divider sx={{ my: 1, borderColor: "var(--border)" }} />
-                              <Typography sx={listViewSx.menuLabel}>Move to</Typography>
-                              <Box sx={listViewSx.moveGrid}>
-                                {statuses.map((s) => (
-                                  <Button key={s} onClick={() => { setOpenMenuId(null); onMoveTo(job.id, s); }} sx={listViewSx.moveBtn}>
-                                    {s}
-                                  </Button>
-                                ))}
+                              <Box sx={listViewSx.menuInner}>
+                                <Button
+                                  fullWidth
+                                  startIcon={
+                                    <EditOutlinedIcon fontSize="small" />
+                                  }
+                                  onClick={() => {
+                                    setOpenMenuId(null);
+                                    setOpenMoveId(null);
+                                    onEdit?.(job);
+                                  }}
+                                  sx={listViewSx.menuItem}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  fullWidth
+                                  startIcon={
+                                    <EastOutlinedIcon fontSize="small" />
+                                  }
+                                  onClick={() =>
+                                    setOpenMoveId((p) =>
+                                      p === job.id ? null : job.id,
+                                    )
+                                  }
+                                  sx={listViewSx.menuItem}
+                                >
+                                  Move to...
+                                </Button>
+
+                                {openMoveId === job.id && (
+                                  <Box sx={listViewSx.moveMenu}>
+                                    {statuses.map((s) => (
+                                      <Button
+                                        key={s}
+                                        fullWidth
+                                        onClick={() => {
+                                          setOpenMenuId(null);
+                                          setOpenMoveId(null);
+                                          onMoveTo(job.id, s);
+                                        }}
+                                        sx={listViewSx.moveItem}
+                                      >
+                                        {s}
+                                      </Button>
+                                    ))}
+                                  </Box>
+                                )}
+
+                                <Button
+                                  fullWidth
+                                  startIcon={
+                                    <DeleteOutlinedIcon fontSize="small" />
+                                  }
+                                  onClick={() => {
+                                    setOpenMenuId(null);
+                                    setOpenMoveId(null);
+                                    onDelete(job.id);
+                                  }}
+                                  sx={listViewSx.dangerMenuItem}
+                                >
+                                  Delete
+                                </Button>
                               </Box>
-                              <Divider sx={{ my: 1, borderColor: "var(--border)" }} />
-                              <Button fullWidth startIcon={<DeleteRoundedIcon fontSize="small" />} onClick={() => { setOpenMenuId(null); onDelete(job.id); }} sx={listViewSx.dangerMenuItem}>
-                                Delete
-                              </Button>
                             </Box>
                           )}
                         </Box>
@@ -256,7 +336,9 @@ export default function ListView({
       {selectedCount > 0 && (
         <Paper sx={listViewSx.bulkBar}>
           <Box sx={listViewSx.bulkLeft}>
-            <Typography sx={{ fontWeight: 900 }}>{selectedCount} Selected</Typography>
+            <Typography sx={{ fontWeight: 900 }}>
+              {selectedCount} Selected
+            </Typography>
             <Button onClick={clearSelection} sx={listViewSx.ghostBtn}>
               Clear
             </Button>
@@ -264,13 +346,25 @@ export default function ListView({
 
           <Box sx={listViewSx.bulkRight}>
             <Box sx={{ position: "relative" }} ref={bulkMoveRef}>
-              <Button onClick={() => setBulkMoveOpen((v) => !v)} startIcon={<SwapHorizRoundedIcon />} sx={listViewSx.ghostBtn}>
+              <Button
+                onClick={() => setBulkMoveOpen((v) => !v)}
+                startIcon={<EastOutlinedIcon />}
+                sx={listViewSx.ghostBtn}
+              >
                 Move To...
               </Button>
               {bulkMoveOpen && (
                 <Box sx={listViewSx.bulkMoveMenu}>
                   {statuses.map((s) => (
-                    <Button key={s} fullWidth onClick={() => { setBulkMoveOpen(false); bulkMove(s); }} sx={listViewSx.bulkMoveItem}>
+                    <Button
+                      key={s}
+                      fullWidth
+                      onClick={() => {
+                        setBulkMoveOpen(false);
+                        bulkMove(s);
+                      }}
+                      sx={listViewSx.bulkMoveItem}
+                    >
                       {s}
                     </Button>
                   ))}
@@ -278,11 +372,19 @@ export default function ListView({
               )}
             </Box>
 
-            <Button onClick={bulkDelete} startIcon={<DeleteRoundedIcon />} sx={listViewSx.bulkDangerBtn}>
-              Delete
+            <Button
+              onClick={bulkDelete}
+              startIcon={<DeleteOutlinedIcon />}
+              sx={listViewSx.bulkDangerBtn}
+            >
+              Delaete
             </Button>
 
-            <Button onClick={() => onExport?.(selectedJobs)} disabled={!onExport} sx={listViewSx.ghostBtn}>
+            <Button
+              onClick={() => onExport?.(selectedJobs)}
+              disabled={!onExport}
+              sx={listViewSx.ghostBtn}
+            >
               Export
             </Button>
           </Box>

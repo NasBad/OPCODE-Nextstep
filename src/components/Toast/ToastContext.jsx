@@ -2,9 +2,9 @@ import { useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { Box, Button, Typography } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
-import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
+import DoneOutlinedIcon from "@mui/icons-material/DoneOutlined";
+import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
+import ReportProblemOutlinedIcon from "@mui/icons-material/ReportProblemOutlined";
 import { ToastContext } from "./toastStore";
 import { toastSx } from "./Toast.styles";
 
@@ -31,7 +31,11 @@ export function ToastProvider({ children }) {
       {createPortal(
         <Box sx={toastSx.container}>
           {toasts.map((toast) => (
-            <ToastCard key={toast.id} toast={toast} onClose={() => removeToast(toast.id)} />
+            <ToastCard
+              key={toast.id}
+              toast={toast}
+              onClose={() => removeToast(toast.id)}
+            />
           ))}
         </Box>,
         document.body,
@@ -63,7 +67,7 @@ function ToastCard({ toast, onClose }) {
 }
 
 const toastStyles = {
-  success: { color: "#16a34a", icon: CheckCircleRoundedIcon },
-  error: { color: "#dc2626", icon: ErrorRoundedIcon },
-  warning: { color: "#d97706", icon: WarningRoundedIcon },
+  success: { color: "#16a34a", icon: DoneOutlinedIcon },
+  error: { color: "#dc2626", icon: ClearOutlinedIcon },
+  warning: { color: "#d97706", icon: ReportProblemOutlinedIcon },
 };

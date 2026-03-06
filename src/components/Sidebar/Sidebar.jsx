@@ -1,11 +1,11 @@
 import { Box, Button } from "@mui/material";
 import WorkOutlineRoundedIcon from "@mui/icons-material/WorkOutlineRounded";
-import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
-import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
-import ArchiveRoundedIcon from "@mui/icons-material/ArchiveRounded";
-import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
-import KeyboardDoubleArrowLeftRoundedIcon from "@mui/icons-material/KeyboardDoubleArrowLeftRounded";
-import KeyboardDoubleArrowRightRoundedIcon from "@mui/icons-material/KeyboardDoubleArrowRightRounded";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
+import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
+import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutlined";
 import { useToast } from "../Toast/toastStore";
 import logoFull from "../../assets/logo-with-name.png";
 import logoIcon from "../../assets/small-Logo.png";
@@ -46,19 +46,19 @@ export default function Sidebar({ collapsed, onToggleCollapsed }) {
         />
         <NavItem
           collapsed={collapsed}
-          icon={<DescriptionRoundedIcon fontSize="small" />}
+          icon={<DescriptionOutlinedIcon fontSize="small" />}
           label="Resumes"
           onClick={notReady}
         />
         <NavItem
           collapsed={collapsed}
-          icon={<AutoAwesomeRoundedIcon fontSize="small" />}
+          icon={<AutoAwesomeOutlinedIcon fontSize="small" />}
           label="Subscriptions"
           onClick={notReady}
         />
         <NavItem
           collapsed={collapsed}
-          icon={<ArchiveRoundedIcon fontSize="small" />}
+          icon={<ArchiveOutlinedIcon fontSize="small" />}
           label="Archive"
           onClick={notReady}
         />
@@ -68,7 +68,7 @@ export default function Sidebar({ collapsed, onToggleCollapsed }) {
         <Box sx={sidebarSx.footerRow(collapsed)}>
           <NavItem
             collapsed={collapsed}
-            icon={<SettingsRoundedIcon fontSize="small" />}
+            icon={<SettingsOutlinedIcon fontSize="small" />}
             label="Settings"
             onClick={notReady}
           />
@@ -80,9 +80,9 @@ export default function Sidebar({ collapsed, onToggleCollapsed }) {
             sx={sidebarSx.collapseBtn}
           >
             {collapsed ? (
-              <KeyboardDoubleArrowRightRoundedIcon fontSize="small" />
+              <ArrowForwardIosOutlinedIcon fontSize="small" />
             ) : (
-              <KeyboardDoubleArrowLeftRoundedIcon fontSize="small" />
+              <ArrowBackIosNewOutlinedIcon fontSize="small" />
             )}
           </Button>
         </Box>
