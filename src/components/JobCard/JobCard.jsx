@@ -1,10 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Box, Button, MenuItem, Select, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
-import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import DriveFileMoveRoundedIcon from "@mui/icons-material/DriveFileMoveRounded";
-import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import EastOutlinedIcon from "@mui/icons-material/EastOutlined";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { STATUSES } from "../../constants/statuses";
@@ -23,7 +30,10 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
 
   const closeMenu = () => setMenuOpen(false);
   const fromStatus = job.status || "Wishlist";
-  const statusTheme = useMemo(() => getStatusTheme(fromStatus, theme), [fromStatus, theme]);
+  const statusTheme = useMemo(
+    () => getStatusTheme(fromStatus, theme),
+    [fromStatus, theme],
+  );
 
   const calcPosition = () => {
     const btn = kebabRef.current;
@@ -98,9 +108,13 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
     <Box sx={jobCardSx.card(statusTheme.card)}>
       <Box sx={jobCardSx.topRow}>
         <Box sx={jobCardSx.brandRow}>
-          <Box sx={jobCardSx.logoCircle(statusTheme.logoBg)}>{getInitials(job.companyName)}</Box>
+          <Box sx={jobCardSx.logoCircle(statusTheme.logoBg)}>
+            {getInitials(job.companyName)}
+          </Box>
           <Box sx={{ minWidth: 0 }}>
-            <Typography sx={jobCardSx.companyName}>{job.companyName}</Typography>
+            <Typography sx={jobCardSx.companyName}>
+              {job.companyName}
+            </Typography>
             <Typography sx={jobCardSx.subtitle}>{job.jobTitle}</Typography>
             <Typography sx={jobCardSx.subtitle}>
               {job.location ? ` ${job.location} ,` : ""}
@@ -109,7 +123,12 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
           </Box>
         </Box>
 
-        <Button ref={kebabRef} onClick={toggleMenu} sx={jobCardSx.kebabBtn} aria-label="Card menu">
+        <Button
+          ref={kebabRef}
+          onClick={toggleMenu}
+          sx={jobCardSx.kebabBtn}
+          aria-label="Card menu"
+        >
           <MoreVertRoundedIcon fontSize="small" />
         </Button>
 
@@ -124,7 +143,7 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
               <Box sx={jobCardSx.menuInner}>
                 <Button
                   type="button"
-                  startIcon={<EditRoundedIcon fontSize="small" />}
+                  startIcon={<EditOutlinedIcon fontSize="small" />}
                   sx={jobCardSx.menuItem}
                   onClick={() => {
                     closeMenu();
@@ -134,13 +153,18 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
                   Edit
                 </Button>
 
-                <Button type="button" startIcon={<DriveFileMoveRoundedIcon fontSize="small" />} sx={jobCardSx.menuItem} onClick={openMoveModal}>
+                <Button
+                  type="button"
+                  startIcon={<EastOutlinedIcon fontSize="small" />}
+                  sx={jobCardSx.menuItem}
+                  onClick={openMoveModal}
+                >
                   Move to...
                 </Button>
 
                 <Button
                   type="button"
-                  startIcon={<DeleteRoundedIcon fontSize="small" />}
+                  startIcon={<DeleteOutlinedIcon fontSize="small" />}
                   sx={jobCardSx.dangerItem}
                   onClick={() => {
                     closeMenu();
@@ -185,16 +209,34 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
 
       {moveModalOpen &&
         createPortal(
-          <Box sx={jobCardSx.modalOverlay} onPointerDown={(e) => e.target === e.currentTarget && setMoveModalOpen(false)}>
-            <Box sx={jobCardSx.modalBox} onPointerDown={(e) => e.stopPropagation()}>
+          <Box
+            sx={jobCardSx.modalOverlay}
+            onPointerDown={(e) =>
+              e.target === e.currentTarget && setMoveModalOpen(false)
+            }
+          >
+            <Box
+              sx={jobCardSx.modalBox}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
               <Typography sx={jobCardSx.modalTitle}>Move Job</Typography>
               <Box sx={jobCardSx.field}>
                 <Typography sx={jobCardSx.label}>From</Typography>
-                <TextField value={fromStatus} disabled size="small" sx={jobCardSx.input("var(--panel-2)")} />
+                <TextField
+                  value={fromStatus}
+                  disabled
+                  size="small"
+                  sx={jobCardSx.input("var(--panel-2)")}
+                />
               </Box>
               <Box sx={jobCardSx.field}>
                 <Typography sx={jobCardSx.label}>To</Typography>
-                <Select value={toStatus} onChange={(e) => setToStatus(e.target.value)} size="small" sx={jobCardSx.input("var(--panel)")}>
+                <Select
+                  value={toStatus}
+                  onChange={(e) => setToStatus(e.target.value)}
+                  size="small"
+                  sx={jobCardSx.input("var(--panel)")}
+                >
                   {STATUSES.map((s) => (
                     <MenuItem key={s} value={s} disabled={s === fromStatus}>
                       {s}
@@ -203,10 +245,19 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
                 </Select>
               </Box>
               <Box sx={jobCardSx.modalActions}>
-                <Button type="button" onClick={() => setMoveModalOpen(false)} sx={jobCardSx.btnGhost}>
+                <Button
+                  type="button"
+                  onClick={() => setMoveModalOpen(false)}
+                  sx={jobCardSx.btnGhost}
+                >
                   Cancel
                 </Button>
-                <Button type="button" onClick={confirmMove} disabled={!toStatus || toStatus === fromStatus} sx={jobCardSx.btnPrimary}>
+                <Button
+                  type="button"
+                  onClick={confirmMove}
+                  disabled={!toStatus || toStatus === fromStatus}
+                  sx={jobCardSx.btnPrimary}
+                >
                   Move
                 </Button>
               </Box>
@@ -217,16 +268,29 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
 
       {confirmDeleteOpen &&
         createPortal(
-          <Box sx={jobCardSx.modalOverlay} onPointerDown={(e) => e.target === e.currentTarget && setConfirmDeleteOpen(false)}>
-            <Box sx={jobCardSx.modalBox} onPointerDown={(e) => e.stopPropagation()}>
+          <Box
+            sx={jobCardSx.modalOverlay}
+            onPointerDown={(e) =>
+              e.target === e.currentTarget && setConfirmDeleteOpen(false)
+            }
+          >
+            <Box
+              sx={jobCardSx.modalBox}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
               <Typography sx={jobCardSx.modalTitle}>Delete Job</Typography>
               <Typography sx={jobCardSx.confirmText}>
-                Are you sure you want to delete <strong>{job.companyName}</strong>?
+                Are you sure you want to delete{" "}
+                <strong>{job.companyName}</strong>?
                 <br />
                 This action cannot be undone.
               </Typography>
               <Box sx={jobCardSx.modalActions}>
-                <Button type="button" onClick={() => setConfirmDeleteOpen(false)} sx={jobCardSx.btnGhost}>
+                <Button
+                  type="button"
+                  onClick={() => setConfirmDeleteOpen(false)}
+                  sx={jobCardSx.btnGhost}
+                >
                   Cancel
                 </Button>
                 <Button
@@ -251,11 +315,55 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
 function getStatusTheme(status, theme) {
   const s = (status || "").toLowerCase();
   const isDark = theme === "dark";
-  if (s.includes("wishlist")) return isDark ? { card: { background: "#2b1f4a", borderColor: "#5b3dbd" }, logoBg: "#3a2c6b" } : { card: { background: "#f3efff", borderColor: "#e2d9ff" }, logoBg: "#ffffff" };
-  if (s.includes("applied")) return isDark ? { card: { background: "#3a1c22", borderColor: "#b91c1c" }, logoBg: "#4a222a" } : { card: { background: "#fff0f1", borderColor: "#ffd4d8" }, logoBg: "#ffffff" };
-  if (s.includes("interview")) return isDark ? { card: { background: "#3a2f0f", borderColor: "#d97706" }, logoBg: "#4a3a14" } : { card: { background: "#fff8db", borderColor: "#ffe89e" }, logoBg: "#ffffff" };
-  if (s.includes("offer")) return isDark ? { card: { background: "#12392b", borderColor: "#10b981" }, logoBg: "#184c39" } : { card: { background: "#eafff2", borderColor: "#b9f3d2" }, logoBg: "#ffffff" };
-  return isDark ? { card: { background: "#1e293b", borderColor: "#334155" }, logoBg: "#2a3446" } : { card: { background: "#f3f4f6", borderColor: "#e5e7eb" }, logoBg: "#ffffff" };
+  if (s.includes("wishlist"))
+    return isDark
+      ? {
+          card: { background: "#2b1f4a", borderColor: "#5b3dbd" },
+          logoBg: "#3a2c6b",
+        }
+      : {
+          card: { background: "#f3efff", borderColor: "#e2d9ff" },
+          logoBg: "#ffffff",
+        };
+  if (s.includes("applied"))
+    return isDark
+      ? {
+          card: { background: "#3a1c22", borderColor: "#b91c1c" },
+          logoBg: "#4a222a",
+        }
+      : {
+          card: { background: "#fff0f1", borderColor: "#ffd4d8" },
+          logoBg: "#ffffff",
+        };
+  if (s.includes("interview"))
+    return isDark
+      ? {
+          card: { background: "#3a2f0f", borderColor: "#d97706" },
+          logoBg: "#4a3a14",
+        }
+      : {
+          card: { background: "#fff8db", borderColor: "#ffe89e" },
+          logoBg: "#ffffff",
+        };
+  if (s.includes("offer"))
+    return isDark
+      ? {
+          card: { background: "#12392b", borderColor: "#10b981" },
+          logoBg: "#184c39",
+        }
+      : {
+          card: { background: "#eafff2", borderColor: "#b9f3d2" },
+          logoBg: "#ffffff",
+        };
+  return isDark
+    ? {
+        card: { background: "#1e293b", borderColor: "#334155" },
+        logoBg: "#2a3446",
+      }
+    : {
+        card: { background: "#f3f4f6", borderColor: "#e5e7eb" },
+        logoBg: "#ffffff",
+      };
 }
 
 function getInitials(name) {

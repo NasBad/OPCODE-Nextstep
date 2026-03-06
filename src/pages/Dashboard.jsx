@@ -138,9 +138,7 @@ export default function Dashboard({ searchQuery = "" }) {
     <Box sx={dashboardPageSx.root}>
       <DashboardHeader
         viewMode={viewMode}
-        onToggleView={() =>
-          setViewMode((v) => (v === "kanban" ? "list" : "kanban"))
-        }
+        onChangeView={setViewMode}
       />
 
       {viewMode === "kanban" ? (
