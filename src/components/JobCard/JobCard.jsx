@@ -236,6 +236,7 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
                   onChange={(e) => setToStatus(e.target.value)}
                   size="small"
                   sx={jobCardSx.input("var(--panel)")}
+                  MenuProps={{ disablePortal: true }}
                 >
                   {STATUSES.map((s) => (
                     <MenuItem key={s} value={s} disabled={s === fromStatus}>
