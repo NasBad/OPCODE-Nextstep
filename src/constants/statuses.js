@@ -1,1 +1,1 @@
-export const STATUSES = ["Wishlist", "Applied", "Interviewing", "Offer"];
+export const STATUSES = ["Wishlist", "Applied", "Interviewing", "Offer", "Rejected"];
