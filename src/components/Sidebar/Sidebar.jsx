@@ -22,7 +22,7 @@ function NavItem({ icon, label, active = false, collapsed = false, onClick }) {
   );
 }
 
-export default function Sidebar({ collapsed, onToggleCollapsed }) {
+export default function Sidebar({ collapsed, onToggleCollapsed, currentPage, onNavigate }) {
   const { addToast } = useToast();
   const notReady = () => addToast("warning", "Warning", "Page Not Ready Yet");
 
@@ -39,10 +39,11 @@ export default function Sidebar({ collapsed, onToggleCollapsed }) {
 
       <Box component="nav" sx={sidebarSx.nav}>
         <NavItem
-          active
+          active={currentPage === "dashboard"}
           collapsed={collapsed}
           icon={<WorkOutlineRoundedIcon fontSize="small" />}
           label="Job Applications"
+          onClick={() => onNavigate?.("dashboard")}
         />
         <NavItem
           collapsed={collapsed}
@@ -57,10 +58,11 @@ export default function Sidebar({ collapsed, onToggleCollapsed }) {
           onClick={notReady}
         />
         <NavItem
+          active={currentPage === "archive"}
           collapsed={collapsed}
           icon={<ArchiveOutlinedIcon fontSize="small" />}
           label="Archive"
-          onClick={notReady}
+          onClick={() => onNavigate?.("archive")}
         />
       </Box>
 
