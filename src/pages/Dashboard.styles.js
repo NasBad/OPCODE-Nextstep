@@ -6,7 +6,7 @@ export const dashboardPageSx = {
     p: { xs: 1.5, sm: 2 },
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
+    alignItems: "stretch",
     justifyContent: "flex-start",
     gap: 1.75,
   },
