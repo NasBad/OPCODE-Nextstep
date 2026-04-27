@@ -9,7 +9,6 @@ import { useToast } from "../components/Toast/toastStore";
 import JobDetailsDrawer from "../components/JobDetailsDrawer/JobDetailsDrawer";
 import { dashboardPageSx } from "./Dashboard.styles";
 
-// ✅ NEW (separated views)
 import DashboardHeader from "../features/dashboard/DashboardHeader";
 import KanbanBoard from "../features/dashboard/KanbanBoard";
 import ListView from "../features/dashboard/ListView";
@@ -18,23 +17,22 @@ export default function Dashboard({ searchQuery = "" }) {
   const [jobs, setJobs] = useState(jobsMock);
   const { addToast } = useToast();
 
-  // ✅ NEW: view mode
-  const [viewMode, setViewMode] = useState("kanban"); // "kanban" | "list"
+  const [viewMode, setViewMode] = useState("kanban");
 
   const [addOpen, setAddOpen] = useState(false);
   const [addStatus, setAddStatus] = useState(STATUSES[0]);
 
-  // ✅ Drawer state
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingJob, setEditingJob] = useState(null);
+
   const [selectedJob, setSelectedJob] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // remove Rejected
   const visibleStatuses = useMemo(
     () => STATUSES.filter((s) => s !== "Rejected"),
     [],
   );
 
-  // filter by topbar searchQuery
   const filteredJobs = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return jobs;
@@ -59,7 +57,6 @@ export default function Dashboard({ searchQuery = "" }) {
     return map;
   }, [filteredJobs, visibleStatuses]);
 
-  // ✅ list view sorting (latest updated first)
   const listJobs = useMemo(() => {
     return [...filteredJobs].sort((a, b) => {
       const da = new Date(a.updatedAt ?? a.createdAt ?? 0).getTime();
@@ -84,7 +81,6 @@ export default function Dashboard({ searchQuery = "" }) {
     setJobs((prev) => prev.filter((j) => j.id !== jobId));
     addToast("success", "Success", `Deleted ${job?.companyName ?? "job"}`);
 
-    // ✅ if you delete the open job, close drawer
     if (selectedJob?.id === jobId) {
       setDrawerOpen(false);
       setSelectedJob(null);
@@ -114,7 +110,6 @@ export default function Dashboard({ searchQuery = "" }) {
 
     addToast("success", "Success", `Moved to ${newStatus}`);
 
-    // ✅ keep drawer in sync if this job is open
     if (selectedJob?.id === jobId) {
       setSelectedJob((prev) =>
         prev
@@ -124,11 +119,26 @@ export default function Dashboard({ searchQuery = "" }) {
     }
   };
 
-  const editJob = () => {
-    addToast("warning", "Warning", "Feature Not Ready Yet");
+  const openEdit = (job) => {
+    setEditingJob(job);
+    setEditOpen(true);
   };
 
-  // ✅ OPEN drawer when card clicked
+  const saveEdit = (updatedJob) => {
+    setJobs((prev) =>
+      prev.map((j) =>
+        j.id === updatedJob.id
+          ? { ...updatedJob, updatedAt: new Date().toISOString() }
+          : j,
+      ),
+    );
+    addToast("success", "Success", "Job updated");
+
+    if (selectedJob?.id === updatedJob.id) {
+      setSelectedJob({ ...updatedJob, updatedAt: new Date().toISOString() });
+    }
+  };
+
   const onSelectJob = (job) => {
     setSelectedJob(job);
     setDrawerOpen(true);
@@ -146,7 +156,7 @@ export default function Dashboard({ searchQuery = "" }) {
           statuses={visibleStatuses}
           jobsByStatus={jobsByStatus}
           onDelete={deleteJob}
-          onEdit={editJob}
+          onEdit={openEdit}
           onMoveTo={moveTo}
           onAdd={(status) => {
             setAddStatus(status);
@@ -161,7 +171,7 @@ export default function Dashboard({ searchQuery = "" }) {
           onMoveTo={moveTo}
           onDelete={deleteJob}
           onSelect={onSelectJob}
-          onEdit={editJob}
+          onEdit={openEdit}
         />
       )}
 
@@ -174,7 +184,18 @@ export default function Dashboard({ searchQuery = "" }) {
         />
       )}
 
-      {/* ✅ Right details drawer */}
+      {editOpen && editingJob && (
+        <AddJobModal
+          open={editOpen}
+          onClose={() => {
+            setEditOpen(false);
+            setEditingJob(null);
+          }}
+          onEdit={saveEdit}
+          editJob={editingJob}
+        />
+      )}
+
       <JobDetailsDrawer
         open={drawerOpen}
         job={selectedJob}
