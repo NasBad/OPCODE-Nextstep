@@ -1,7 +1,7 @@
 export const statusColumnSx = {
   root: {
-    width: 350,
-    flex: "0 0 350px",
+    flex: 1,
+    minWidth: 220,
     background: "var(--panel)",
     color: "var(--text)",
     border: "1px solid var(--border)",

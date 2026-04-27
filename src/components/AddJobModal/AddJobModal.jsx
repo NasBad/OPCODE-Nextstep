@@ -1,7 +1,9 @@
 import { useState } from "react";
 import {
+  Autocomplete,
   Box,
   Button,
+  Chip,
   MenuItem,
   Modal,
   Select,
@@ -12,13 +14,22 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { STATUSES } from "../../constants/statuses";
 import { addJobModalSx } from "./AddJobModal.styles";
 
+const PRESET_TAGS = [
+  "React", "Vue", "Angular", "JavaScript", "TypeScript",
+  "Node", "Python", "Java", "SQL", "MongoDB",
+  "CSS", "HTML", "Git", "Docker", "AWS",
+  "GraphQL", "REST", "Redux", "Next.js", "Figma",
+];
+
+const MAX_TAGS = 5;
+
 export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
   const [companyName, setCompanyName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [status, setStatus] = useState(defaultStatus ?? STATUSES[0]);
   const [location, setLocation] = useState("");
   const [workType, setWorkType] = useState("hybrid");
-  const [tagsText, setTagsText] = useState("");
+  const [tags, setTags] = useState([]);
   const [jobUrl, setJobUrl] = useState("");
 
   if (!open) return null;
@@ -29,7 +40,7 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
     setStatus(defaultStatus ?? STATUSES[0]);
     setLocation("");
     setWorkType("hybrid");
-    setTagsText("");
+    setTags([]);
     setJobUrl("");
   };
 
@@ -38,12 +49,6 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
     const trimmedCompany = companyName.trim();
     const trimmedTitle = jobTitle.trim();
     if (!trimmedCompany || !trimmedTitle) return;
-
-    const tags = tagsText
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean)
-      .slice(0, 8);
 
     onAdd({
       id: crypto.randomUUID(),
@@ -120,8 +125,38 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
             <TextField value={jobUrl} onChange={(e) => setJobUrl(e.target.value)} placeholder="https://..." size="small" sx={addJobModalSx.input} />
           </Field>
 
-          <Field label="Tags (comma separated)">
-            <TextField value={tagsText} onChange={(e) => setTagsText(e.target.value)} placeholder="React, JavaScript, Node" size="small" sx={addJobModalSx.input} />
+          <Field label={`Tags (max ${MAX_TAGS})`}>
+            <Autocomplete
+              multiple
+              options={PRESET_TAGS.filter((t) => !tags.includes(t))}
+              value={tags}
+              onChange={(_, newValue) => {
+                if (newValue.length <= MAX_TAGS) setTags(newValue);
+              }}
+              freeSolo
+              size="small"
+              getOptionDisabled={() => tags.length >= MAX_TAGS}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    key={option}
+                    label={option}
+                    size="small"
+                    {...getTagProps({ index })}
+                    sx={{ fontSize: 11 }}
+                  />
+                ))
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder={tags.length >= MAX_TAGS ? `Max ${MAX_TAGS} tags` : "Add a tag..."}
+                  size="small"
+                  sx={addJobModalSx.input}
+                  helperText={tags.length >= MAX_TAGS ? `Maximum of ${MAX_TAGS} tags reached` : ""}
+                />
+              )}
+            />
           </Field>
 
           <Box sx={addJobModalSx.actions}>
