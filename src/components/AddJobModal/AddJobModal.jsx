@@ -21,27 +21,45 @@ const PRESET_TAGS = [
   "GraphQL", "REST", "Redux", "Next.js", "Figma",
 ];
 
+const PLATFORMS = ["LinkedIn", "Indeed", "Glassdoor", "Company site", "Referral", "Other"];
 const MAX_TAGS = 5;
 
-export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
-  const [companyName, setCompanyName] = useState("");
-  const [jobTitle, setJobTitle] = useState("");
-  const [status, setStatus] = useState(defaultStatus ?? STATUSES[0]);
-  const [location, setLocation] = useState("");
-  const [workType, setWorkType] = useState("hybrid");
-  const [tags, setTags] = useState([]);
-  const [jobUrl, setJobUrl] = useState("");
+export default function AddJobModal({ open, onClose, onAdd, onEdit, editJob, defaultStatus }) {
+  const isEditing = Boolean(editJob);
+
+  const [companyName, setCompanyName] = useState(editJob?.companyName ?? "");
+  const [jobTitle, setJobTitle] = useState(editJob?.jobTitle ?? "");
+  const [status, setStatus] = useState(editJob?.status ?? defaultStatus ?? STATUSES[0]);
+  const [location, setLocation] = useState(editJob?.location ?? "");
+  const [workType, setWorkType] = useState(editJob?.workType ?? "hybrid");
+  const [tags, setTags] = useState(editJob?.tags ?? []);
+  const [jobUrl, setJobUrl] = useState(editJob?.jobUrl ?? "");
+
+  // Applied-level
+  const [appliedDate, setAppliedDate] = useState(editJob?.appliedDate?.slice(0, 10) ?? "");
+  const [platform, setPlatform] = useState(editJob?.platform ?? "");
+  const [notes, setNotes] = useState(editJob?.notes ?? "");
+
+  // Interviewing-level
+  const [nextInterviewDate, setNextInterviewDate] = useState(editJob?.nextInterviewDate?.slice(0, 10) ?? "");
+  const [round, setRound] = useState(editJob?.round ?? "");
+
+  // Offer-level
+  const [answerDeadline, setAnswerDeadline] = useState(editJob?.answerDeadline?.slice(0, 10) ?? "");
+  const [offerAmount, setOfferAmount] = useState(editJob?.offerAmount ?? "");
 
   if (!open) return null;
 
+  const showApplied = ["Applied", "Interviewing", "Offer", "Rejected"].includes(status);
+  const showInterviewing = ["Interviewing", "Offer", "Rejected"].includes(status);
+  const showOffer = ["Offer", "Rejected"].includes(status);
+
   const reset = () => {
-    setCompanyName("");
-    setJobTitle("");
-    setStatus(defaultStatus ?? STATUSES[0]);
-    setLocation("");
-    setWorkType("hybrid");
-    setTags([]);
-    setJobUrl("");
+    setCompanyName(""); setJobTitle(""); setStatus(defaultStatus ?? STATUSES[0]);
+    setLocation(""); setWorkType("hybrid"); setTags([]); setJobUrl("");
+    setAppliedDate(""); setPlatform(""); setNotes("");
+    setNextInterviewDate(""); setRound("");
+    setAnswerDeadline(""); setOfferAmount("");
   };
 
   const handleSubmit = (e) => {
@@ -49,9 +67,11 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
     const trimmedCompany = companyName.trim();
     const trimmedTitle = jobTitle.trim();
     if (!trimmedCompany || !trimmedTitle) return;
+    if (showApplied && !appliedDate) return;
+    if (showInterviewing && !nextInterviewDate) return;
 
-    onAdd({
-      id: crypto.randomUUID(),
+    const job = {
+      ...(isEditing ? editJob : { id: crypto.randomUUID(), createdAt: new Date().toISOString() }),
       companyName: trimmedCompany,
       jobTitle: trimmedTitle,
       status,
@@ -59,11 +79,15 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
       workType,
       jobUrl: jobUrl.trim(),
       tags,
-      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    });
+    };
 
-    reset();
+    if (showApplied) { job.appliedDate = appliedDate; job.platform = platform; job.notes = notes.trim(); }
+    if (showInterviewing) { job.nextInterviewDate = nextInterviewDate; job.round = round.trim(); }
+    if (showOffer) { job.answerDeadline = answerDeadline; job.offerAmount = offerAmount.trim(); }
+
+    isEditing ? onEdit(job) : onAdd(job);
+    if (!isEditing) reset();
     onClose();
   };
 
@@ -72,40 +96,24 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
       <Box onClick={onClose} sx={addJobModalSx.overlay}>
         <Box component="form" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} sx={addJobModalSx.card}>
           <Box sx={addJobModalSx.header}>
-            <Typography sx={addJobModalSx.title}>Add Job</Typography>
+            <Typography sx={addJobModalSx.title}>{isEditing ? "Edit Job" : "Add Job"}</Typography>
             <Button type="button" onClick={onClose} sx={addJobModalSx.closeBtn}>
               <CloseRoundedIcon fontSize="small" />
             </Button>
           </Box>
 
           <Field label="Job Title *">
-            <TextField
-              value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
-              placeholder="e.g. Frontend Developer"
-              size="small"
-              sx={addJobModalSx.input}
-            />
+            <TextField value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="e.g. Frontend Developer" size="small" sx={addJobModalSx.input} />
           </Field>
 
           <Field label="Company Name *">
-            <TextField
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="e.g. Check Point"
-              size="small"
-              sx={addJobModalSx.input}
-            />
+            <TextField value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="e.g. Check Point" size="small" sx={addJobModalSx.input} />
           </Field>
 
           <Box sx={addJobModalSx.grid2}>
             <Field label="Status">
               <Select value={status} onChange={(e) => setStatus(e.target.value)} size="small" sx={addJobModalSx.input}>
-                {STATUSES.map((s) => (
-                  <MenuItem key={s} value={s}>
-                    {s}
-                  </MenuItem>
-                ))}
+                {STATUSES.map((s) => <MenuItem key={s} value={s}>{s}</MenuItem>)}
               </Select>
             </Field>
             <Field label="Work Type">
@@ -130,21 +138,13 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
               multiple
               options={PRESET_TAGS.filter((t) => !tags.includes(t))}
               value={tags}
-              onChange={(_, newValue) => {
-                if (newValue.length <= MAX_TAGS) setTags(newValue);
-              }}
+              onChange={(_, newValue) => { if (newValue.length <= MAX_TAGS) setTags(newValue); }}
               freeSolo
               size="small"
               getOptionDisabled={() => tags.length >= MAX_TAGS}
               renderTags={(value, getTagProps) =>
                 value.map((option, index) => (
-                  <Chip
-                    key={option}
-                    label={option}
-                    size="small"
-                    {...getTagProps({ index })}
-                    sx={{ fontSize: 11 }}
-                  />
+                  <Chip key={option} label={option} size="small" {...getTagProps({ index })} sx={{ fontSize: 11 }} />
                 ))
               }
               renderInput={(params) => (
@@ -159,19 +159,56 @@ export default function AddJobModal({ open, onClose, onAdd, defaultStatus }) {
             />
           </Field>
 
+          {/* Applied-level fields */}
+          {showApplied && (
+            <>
+              <Box sx={addJobModalSx.grid2}>
+                <Field label="Applied Date *">
+                  <TextField type="date" value={appliedDate} onChange={(e) => setAppliedDate(e.target.value)} size="small" sx={addJobModalSx.input} InputLabelProps={{ shrink: true }} inputProps={{ lang: "en" }} />
+                </Field>
+                <Field label="Platform">
+                  <Select value={platform} onChange={(e) => setPlatform(e.target.value)} size="small" sx={addJobModalSx.input} displayEmpty>
+                    <MenuItem value="">— Select —</MenuItem>
+                    {PLATFORMS.map((p) => <MenuItem key={p} value={p}>{p}</MenuItem>)}
+                  </Select>
+                </Field>
+              </Box>
+              <Field label="Notes">
+                <TextField value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Any notes about this application..." size="small" multiline minRows={2} sx={addJobModalSx.input} />
+              </Field>
+            </>
+          )}
+
+          {/* Interviewing-level fields */}
+          {showInterviewing && (
+            <Box sx={addJobModalSx.grid2}>
+              <Field label="Next Interview Date *">
+                <TextField type="date" value={nextInterviewDate} onChange={(e) => setNextInterviewDate(e.target.value)} size="small" sx={addJobModalSx.input} InputLabelProps={{ shrink: true }} inputProps={{ lang: "en" }} />
+              </Field>
+              <Field label="Round">
+                <TextField value={round} onChange={(e) => setRound(e.target.value)} placeholder="e.g. HR Interview" size="small" sx={addJobModalSx.input} />
+              </Field>
+            </Box>
+          )}
+
+          {/* Offer-level fields */}
+          {showOffer && (
+            <Box sx={addJobModalSx.grid2}>
+              <Field label="Answer Deadline">
+                <TextField type="date" value={answerDeadline} onChange={(e) => setAnswerDeadline(e.target.value)} size="small" sx={addJobModalSx.input} InputLabelProps={{ shrink: true }} inputProps={{ lang: "en" }} />
+              </Field>
+              <Field label="Offer Amount">
+                <TextField value={offerAmount} onChange={(e) => setOfferAmount(e.target.value)} placeholder="e.g. 20,000 ₪" size="small" sx={addJobModalSx.input} />
+              </Field>
+            </Box>
+          )}
+
           <Box sx={addJobModalSx.actions}>
-            <Button
-              type="button"
-              onClick={() => {
-                reset();
-                onClose();
-              }}
-              sx={addJobModalSx.secondaryBtn}
-            >
+            <Button type="button" onClick={() => { reset(); onClose(); }} sx={addJobModalSx.secondaryBtn}>
               Cancel
             </Button>
             <Button type="submit" sx={addJobModalSx.primaryBtn}>
-              Add
+              {isEditing ? "Save" : "Add"}
             </Button>
           </Box>
         </Box>
