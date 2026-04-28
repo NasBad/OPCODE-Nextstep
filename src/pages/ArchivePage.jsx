@@ -8,12 +8,12 @@ export default function ArchivePage({ jobs = [], onRestore }) {
       <Typography sx={{ fontSize: 20, fontWeight: 700, mb: 1, color: "var(--text)" }}>
         Archive
       </Typography>
-      <Typography sx={{ fontSize: 14, color: "var(--text-2)", mb: 3 }}>
+      <Typography sx={{ fontSize: 14, color: "var(--muted)", mb: 3 }}>
         Deleted jobs and Rejected applications
       </Typography>
 
       {jobs.length === 0 ? (
-        <Box sx={{ textAlign: "center", mt: 8, color: "var(--text-2)" }}>
+        <Box sx={{ textAlign: "center", mt: 8, color: "var(--muted)" }}>
           <Typography sx={{ fontSize: 16 }}>No archived jobs yet.</Typography>
         </Box>
       ) : (
@@ -29,10 +29,7 @@ export default function ArchivePage({ jobs = [], onRestore }) {
 
 function ArchiveCard({ job, onRestore }) {
   const dateStr = job.updatedAt || job.createdAt;
-  const dateLabel = dateStr
-    ? new Date(dateStr).toLocaleDateString()
-    : "Unknown date";
-
+  const dateLabel = dateStr ? new Date(dateStr).toLocaleDateString() : "Unknown date";
   const reason = job.isDeleted ? "Deleted" : "Rejected";
 
   return (
@@ -53,7 +50,7 @@ function ArchiveCard({ job, onRestore }) {
           sx={{
             width: 36,
             height: 36,
-            borderRadius: "50%",
+            borderRadius: "10px",
             background: "var(--panel-2)",
             display: "flex",
             alignItems: "center",
@@ -62,15 +59,20 @@ function ArchiveCard({ job, onRestore }) {
             fontSize: 13,
             color: "var(--text)",
             flexShrink: 0,
+            overflow: "hidden",
           }}
         >
-          {getInitials(job.companyName)}
+          {job.companyLogo ? (
+            <Box component="img" src={job.companyLogo} alt={job.companyName} sx={{ width: 24, height: 24, objectFit: "contain" }} />
+          ) : (
+            getInitials(job.companyName)
+          )}
         </Box>
         <Box sx={{ minWidth: 0 }}>
           <Typography sx={{ fontWeight: 600, fontSize: 14, color: "var(--text)" }} noWrap>
             {job.companyName}
           </Typography>
-          <Typography sx={{ fontSize: 12, color: "var(--text-2)" }} noWrap>
+          <Typography sx={{ fontSize: 12, color: "var(--muted)" }} noWrap>
             {job.jobTitle}
           </Typography>
         </Box>
@@ -79,11 +81,7 @@ function ArchiveCard({ job, onRestore }) {
       <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
         <Box
           sx={{
-            px: 1.5,
-            py: 0.5,
-            borderRadius: 99,
-            fontSize: 11,
-            fontWeight: 600,
+            px: 1.5, py: 0.5, borderRadius: 99, fontSize: 11, fontWeight: 600,
             background: reason === "Rejected" ? "#ffd4d8" : "#e5e7eb",
             color: reason === "Rejected" ? "#b91c1c" : "#374151",
           }}
@@ -91,7 +89,7 @@ function ArchiveCard({ job, onRestore }) {
           {reason}
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "var(--text-2)" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "var(--muted)" }}>
           <AccessTimeRoundedIcon sx={{ fontSize: 13 }} />
           <Typography sx={{ fontSize: 12 }}>{dateLabel}</Typography>
         </Box>
@@ -104,7 +102,7 @@ function ArchiveCard({ job, onRestore }) {
             sx={{
               fontSize: 12,
               textTransform: "none",
-              color: "var(--primary, #7c3aed)",
+              color: "var(--primary)",
               "&:hover": { background: "var(--panel-2)" },
             }}
           >
@@ -118,10 +116,5 @@ function ArchiveCard({ job, onRestore }) {
 
 function getInitials(name) {
   if (!name) return "*";
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase())
-    .join("");
+  return name.trim().split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("");
 }

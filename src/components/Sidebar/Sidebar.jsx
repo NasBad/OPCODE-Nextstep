@@ -39,7 +39,7 @@ export default function Sidebar({ collapsed, onToggleCollapsed, currentPage, onN
 
       <Box component="nav" sx={sidebarSx.nav}>
         <NavItem
-          active={currentPage === "dashboard"}
+          active={currentPage === "dashboard" || !currentPage}
           collapsed={collapsed}
           icon={<WorkOutlineRoundedIcon fontSize="small" />}
           label="Job Applications"
