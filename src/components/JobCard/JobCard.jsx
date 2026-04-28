@@ -20,6 +20,7 @@ import { jobCardSx } from "./JobCard.styles";
 
 export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logoFailed, setLogoFailed] = useState(false);
   const { theme } = useTheme();
   const [moveModalOpen, setMoveModalOpen] = useState(false);
   const [toStatus, setToStatus] = useState(job.status || STATUSES[0]);
@@ -109,7 +110,17 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
       <Box sx={jobCardSx.topRow}>
         <Box sx={jobCardSx.brandRow}>
           <Box sx={jobCardSx.logoCircle(statusTheme.logoBg)}>
-            {getInitials(job.companyName)}
+            {job.companyLogo && !logoFailed ? (
+              <Box
+                component="img"
+                src={job.companyLogo}
+                alt={job.companyName}
+                onError={() => setLogoFailed(true)}
+                sx={{ width: 26, height: 26, objectFit: "contain", borderRadius: "4px" }}
+              />
+            ) : (
+              getInitials(job.companyName)
+            )}
           </Box>
           <Box sx={{ minWidth: 0 }}>
             <Typography sx={jobCardSx.companyName}>

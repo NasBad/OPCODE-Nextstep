@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Box, Button, Chip, TextField, Typography } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
@@ -6,6 +7,7 @@ import { jobDetailsDrawerSx } from "./JobDetailsDrawer.styles";
 
 export default function JobDetailsDrawer({ job, open, onClose }) {
   const { addToast } = useToast();
+  const [logoFailed, setLogoFailed] = useState(false);
   const statusColor = getStatusColor(job?.status);
   if (!open) return null;
 
@@ -16,7 +18,19 @@ export default function JobDetailsDrawer({ job, open, onClose }) {
       <Box component="aside" role="dialog" aria-modal="true" sx={jobDetailsDrawerSx.drawer}>
         <Box sx={jobDetailsDrawerSx.header}>
           <Box sx={jobDetailsDrawerSx.companyRow}>
-            <Box sx={jobDetailsDrawerSx.companyInitial}>{getInitials(job?.companyName)}</Box>
+            <Box sx={jobDetailsDrawerSx.companyInitial}>
+              {job?.companyLogo && !logoFailed ? (
+                <Box
+                  component="img"
+                  src={job.companyLogo}
+                  alt={job.companyName}
+                  onError={() => setLogoFailed(true)}
+                  sx={{ width: 28, height: 28, objectFit: "contain", borderRadius: "4px" }}
+                />
+              ) : (
+                getInitials(job?.companyName)
+              )}
+            </Box>
             <Box sx={jobDetailsDrawerSx.titleBlock}>
               <Typography sx={jobDetailsDrawerSx.jobTitle}>{job?.jobTitle || "Untitled"}</Typography>
               <Typography sx={jobDetailsDrawerSx.companyName}>{job?.companyName || "Company"}</Typography>
