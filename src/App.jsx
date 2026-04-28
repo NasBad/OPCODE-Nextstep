@@ -47,14 +47,8 @@ export default function App() {
 
   const moveTo = (jobId, newStatus) => {
     const job = jobs.find((j) => j.id === jobId);
-    if (!job) {
-      addToast("error", "Error", "Job not found");
-      return;
-    }
-    if (job.status === newStatus) {
-      addToast("warning", "Warning", "Already in this column");
-      return;
-    }
+    if (!job) { addToast("error", "Error", "Job not found"); return; }
+    if (job.status === newStatus) { addToast("warning", "Warning", "Already in this column"); return; }
     setJobs((prev) =>
       prev.map((j) =>
         j.id === jobId
