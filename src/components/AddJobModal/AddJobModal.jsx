@@ -13,6 +13,7 @@ import {
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { STATUSES } from "../../constants/statuses";
 import { addJobModalSx } from "./AddJobModal.styles";
+import { companyNames, getCompanyByName } from "../../data/companiesMock";
 
 const PRESET_TAGS = [
   "React", "Vue", "Angular", "JavaScript", "TypeScript",
@@ -70,9 +71,13 @@ export default function AddJobModal({ open, onClose, onAdd, onEdit, editJob, def
     if (showApplied && !appliedDate) return;
     if (showInterviewing && !nextInterviewDate) return;
 
+    // auto-attach logo from known companies
+    const knownCompany = getCompanyByName(trimmedCompany);
+
     const job = {
       ...(isEditing ? editJob : { id: crypto.randomUUID(), createdAt: new Date().toISOString() }),
       companyName: trimmedCompany,
+      companyLogo: knownCompany?.logo ?? editJob?.companyLogo ?? null,
       jobTitle: trimmedTitle,
       status,
       location: location.trim(),
@@ -103,11 +108,30 @@ export default function AddJobModal({ open, onClose, onAdd, onEdit, editJob, def
           </Box>
 
           <Field label="Job Title *">
-            <TextField value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="e.g. Frontend Developer" size="small" sx={addJobModalSx.input} />
+            <TextField
+              value={jobTitle}
+              onChange={(e) => setJobTitle(e.target.value)}
+              placeholder="e.g. Frontend Developer"
+              size="small"
+              sx={addJobModalSx.input}
+            />
           </Field>
 
           <Field label="Company Name *">
-            <TextField value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="e.g. Check Point" size="small" sx={addJobModalSx.input} />
+            <Autocomplete
+              freeSolo
+              options={companyNames}
+              value={companyName}
+              onInputChange={(_, val) => setCompanyName(val)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder="e.g. Google, Check Point..."
+                  size="small"
+                  sx={addJobModalSx.input}
+                />
+              )}
+            />
           </Field>
 
           <Box sx={addJobModalSx.grid2}>
@@ -164,7 +188,15 @@ export default function AddJobModal({ open, onClose, onAdd, onEdit, editJob, def
             <>
               <Box sx={addJobModalSx.grid2}>
                 <Field label="Applied Date *">
-                  <TextField type="date" value={appliedDate} onChange={(e) => setAppliedDate(e.target.value)} size="small" sx={addJobModalSx.input} InputLabelProps={{ shrink: true }} inputProps={{ lang: "en" }} />
+                  <TextField
+                    type="date"
+                    value={appliedDate}
+                    onChange={(e) => setAppliedDate(e.target.value)}
+                    size="small"
+                    sx={addJobModalSx.input}
+                    InputLabelProps={{ shrink: true }}
+                    inputProps={{ lang: "en" }}
+                  />
                 </Field>
                 <Field label="Platform">
                   <Select value={platform} onChange={(e) => setPlatform(e.target.value)} size="small" sx={addJobModalSx.input} displayEmpty>
@@ -174,7 +206,15 @@ export default function AddJobModal({ open, onClose, onAdd, onEdit, editJob, def
                 </Field>
               </Box>
               <Field label="Notes">
-                <TextField value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Any notes about this application..." size="small" multiline minRows={2} sx={addJobModalSx.input} />
+                <TextField
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Any notes about this application..."
+                  size="small"
+                  multiline
+                  minRows={2}
+                  sx={addJobModalSx.input}
+                />
               </Field>
             </>
           )}
@@ -183,7 +223,15 @@ export default function AddJobModal({ open, onClose, onAdd, onEdit, editJob, def
           {showInterviewing && (
             <Box sx={addJobModalSx.grid2}>
               <Field label="Next Interview Date *">
-                <TextField type="date" value={nextInterviewDate} onChange={(e) => setNextInterviewDate(e.target.value)} size="small" sx={addJobModalSx.input} InputLabelProps={{ shrink: true }} inputProps={{ lang: "en" }} />
+                <TextField
+                  type="date"
+                  value={nextInterviewDate}
+                  onChange={(e) => setNextInterviewDate(e.target.value)}
+                  size="small"
+                  sx={addJobModalSx.input}
+                  InputLabelProps={{ shrink: true }}
+                  inputProps={{ lang: "en" }}
+                />
               </Field>
               <Field label="Round">
                 <TextField value={round} onChange={(e) => setRound(e.target.value)} placeholder="e.g. HR Interview" size="small" sx={addJobModalSx.input} />
@@ -195,7 +243,15 @@ export default function AddJobModal({ open, onClose, onAdd, onEdit, editJob, def
           {showOffer && (
             <Box sx={addJobModalSx.grid2}>
               <Field label="Answer Deadline">
-                <TextField type="date" value={answerDeadline} onChange={(e) => setAnswerDeadline(e.target.value)} size="small" sx={addJobModalSx.input} InputLabelProps={{ shrink: true }} inputProps={{ lang: "en" }} />
+                <TextField
+                  type="date"
+                  value={answerDeadline}
+                  onChange={(e) => setAnswerDeadline(e.target.value)}
+                  size="small"
+                  sx={addJobModalSx.input}
+                  InputLabelProps={{ shrink: true }}
+                  inputProps={{ lang: "en" }}
+                />
               </Field>
               <Field label="Offer Amount">
                 <TextField value={offerAmount} onChange={(e) => setOfferAmount(e.target.value)} placeholder="e.g. 20,000 ₪" size="small" sx={addJobModalSx.input} />

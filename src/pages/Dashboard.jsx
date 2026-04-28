@@ -1,12 +1,9 @@
-// src/pages/Dashboard.jsx
-
 import { useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { STATUSES } from "../constants/statuses";
 import AddJobModal from "../components/AddJobModal/AddJobModal";
 import JobDetailsDrawer from "../components/JobDetailsDrawer/JobDetailsDrawer";
 import { dashboardPageSx } from "./Dashboard.styles";
-
 import DashboardHeader from "../features/dashboard/DashboardHeader";
 import KanbanBoard from "../features/dashboard/KanbanBoard";
 import ListView from "../features/dashboard/ListView";
@@ -15,6 +12,11 @@ export default function Dashboard({ searchQuery = "", jobs = [], onAdd, onDelete
   const [viewMode, setViewMode] = useState("kanban");
   const [addOpen, setAddOpen] = useState(false);
   const [addStatus, setAddStatus] = useState(STATUSES[0]);
+
+  // edit modal
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingJob, setEditingJob] = useState(null);
+
   const [selectedJob, setSelectedJob] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -71,6 +73,16 @@ export default function Dashboard({ searchQuery = "", jobs = [], onAdd, onDelete
     }
   };
 
+  const openEdit = (job) => {
+    setEditingJob(job);
+    setEditOpen(true);
+  };
+
+  const saveEdit = (updatedJob) => {
+    onEdit(updatedJob);
+    if (selectedJob?.id === updatedJob.id) setSelectedJob(updatedJob);
+  };
+
   const onSelectJob = (job) => {
     setSelectedJob(job);
     setDrawerOpen(true);
@@ -85,7 +97,7 @@ export default function Dashboard({ searchQuery = "", jobs = [], onAdd, onDelete
           statuses={visibleStatuses}
           jobsByStatus={jobsByStatus}
           onDelete={handleDelete}
-          onEdit={onEdit}
+          onEdit={openEdit}
           onMoveTo={handleMoveTo}
           onAdd={(status) => {
             setAddStatus(status);
@@ -100,7 +112,7 @@ export default function Dashboard({ searchQuery = "", jobs = [], onAdd, onDelete
           onMoveTo={handleMoveTo}
           onDelete={handleDelete}
           onSelect={onSelectJob}
-          onEdit={onEdit}
+          onEdit={openEdit}
         />
       )}
 
@@ -110,6 +122,15 @@ export default function Dashboard({ searchQuery = "", jobs = [], onAdd, onDelete
           onClose={() => setAddOpen(false)}
           onAdd={handleAdd}
           defaultStatus={addStatus}
+        />
+      )}
+
+      {editOpen && editingJob && (
+        <AddJobModal
+          open={editOpen}
+          onClose={() => { setEditOpen(false); setEditingJob(null); }}
+          onEdit={saveEdit}
+          editJob={editingJob}
         />
       )}
 
