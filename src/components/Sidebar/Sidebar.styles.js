@@ -24,6 +24,7 @@ export const sidebarSx = {
     transition: "width 180ms ease",
   }),
   nav: { mt: 1.25, display: "grid", gap: 0.75, px: 0.75 },
+  navLabel: { fontSize: 11, fontWeight: 700, color: "var(--muted)", letterSpacing: "0.08em", textTransform: "uppercase", px: 1, pb: 0.5 },
   navItem: (active, collapsed) => ({
     position: "relative",
     justifyContent: collapsed ? "center" : "flex-start",

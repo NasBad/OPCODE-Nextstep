@@ -377,7 +377,7 @@ export default function ListView({
               startIcon={<DeleteOutlinedIcon />}
               sx={listViewSx.bulkDangerBtn}
             >
-              Delaete
+              Delete
             </Button>
 
             <Button

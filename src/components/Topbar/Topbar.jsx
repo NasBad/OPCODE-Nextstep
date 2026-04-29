@@ -13,7 +13,7 @@ export default function Topbar({ searchValue, onSearchChange }) {
   return (
     <Box component="header" sx={topbarSx.root}>
       <Box>
-        <Typography sx={topbarSx.title}>Job Application</Typography>
+        <Typography sx={topbarSx.title}>Job Applications</Typography>
       </Box>
 
       <Box sx={topbarSx.right}>
