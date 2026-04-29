@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import WorkOutlineRoundedIcon from "@mui/icons-material/WorkOutlineRounded";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
@@ -38,6 +38,9 @@ export default function Sidebar({ collapsed, onToggleCollapsed, currentPage, onN
       </Box>
 
       <Box component="nav" sx={sidebarSx.nav}>
+        {!collapsed && (
+          <Typography sx={sidebarSx.navLabel}>JOBS</Typography>
+        )}
         <NavItem
           active={currentPage === "dashboard" || !currentPage}
           collapsed={collapsed}
