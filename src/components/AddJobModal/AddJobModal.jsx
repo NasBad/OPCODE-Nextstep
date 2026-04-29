@@ -29,6 +29,7 @@ export default function AddJobModal({ open, onClose, onAdd, onEdit, editJob, def
   const isEditing = Boolean(editJob);
 
   const [companyName, setCompanyName] = useState(editJob?.companyName ?? "");
+  const [companyLogoUrl, setCompanyLogoUrl] = useState(editJob?.companyLogo ?? "");
   const [jobTitle, setJobTitle] = useState(editJob?.jobTitle ?? "");
   const [status, setStatus] = useState(editJob?.status ?? defaultStatus ?? STATUSES[0]);
   const [location, setLocation] = useState(editJob?.location ?? "");
@@ -55,44 +56,66 @@ export default function AddJobModal({ open, onClose, onAdd, onEdit, editJob, def
   const showInterviewing = ["Interviewing", "Offer", "Rejected"].includes(status);
   const showOffer = ["Offer", "Rejected"].includes(status);
 
+  // known company auto-fills logo; unknown shows the URL input
+  const knownCompany = getCompanyByName(companyName.trim());
+  const showLogoInput = !knownCompany;
+
   const reset = () => {
-    setCompanyName(""); setJobTitle(""); setStatus(defaultStatus ?? STATUSES[0]);
+    setCompanyName(""); setCompanyLogoUrl(""); setJobTitle("");
+    setStatus(defaultStatus ?? STATUSES[0]);
     setLocation(""); setWorkType("hybrid"); setTags([]); setJobUrl("");
     setAppliedDate(""); setPlatform(""); setNotes("");
     setNextInterviewDate(""); setRound("");
     setAnswerDeadline(""); setOfferAmount("");
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const buildJob = (isDraft = false) => {
     const trimmedCompany = companyName.trim();
     const trimmedTitle = jobTitle.trim();
-    if (!trimmedCompany || !trimmedTitle) return;
-    if (showApplied && !appliedDate) return;
-    if (showInterviewing && !nextInterviewDate) return;
+    if (!trimmedCompany || !trimmedTitle) return null;
+    if (!isDraft && showApplied && !appliedDate) return null;
+    if (!isDraft && showInterviewing && !nextInterviewDate) return null;
 
-    // auto-attach logo from known companies
-    const knownCompany = getCompanyByName(trimmedCompany);
+    const logo = knownCompany?.logo ?? companyLogoUrl.trim() ?? editJob?.companyLogo ?? null;
 
     const job = {
       ...(isEditing ? editJob : { id: crypto.randomUUID(), createdAt: new Date().toISOString() }),
       companyName: trimmedCompany,
-      companyLogo: knownCompany?.logo ?? editJob?.companyLogo ?? null,
+      companyLogo: logo,
       jobTitle: trimmedTitle,
-      status,
+      status: isDraft ? "Wishlist" : status,
       location: location.trim(),
       workType,
       jobUrl: jobUrl.trim(),
       tags,
       updatedAt: new Date().toISOString(),
+      ...(isDraft && { isDraft: true }),
     };
 
-    if (showApplied) { job.appliedDate = appliedDate; job.platform = platform; job.notes = notes.trim(); }
-    if (showInterviewing) { job.nextInterviewDate = nextInterviewDate; job.round = round.trim(); }
-    if (showOffer) { job.answerDeadline = answerDeadline; job.offerAmount = offerAmount.trim(); }
+    if (showApplied && !isDraft) { job.appliedDate = appliedDate; job.platform = platform; job.notes = notes.trim(); }
+    if (showInterviewing && !isDraft) { job.nextInterviewDate = nextInterviewDate; job.round = round.trim(); }
+    if (showOffer && !isDraft) { job.answerDeadline = answerDeadline; job.offerAmount = offerAmount.trim(); }
 
+    return job;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const job = buildJob(false);
+    if (!job) return;
     isEditing ? onEdit(job) : onAdd(job);
     if (!isEditing) reset();
+    onClose();
+  };
+
+  const handleSaveAsDraft = () => {
+    const trimmedCompany = companyName.trim();
+    const trimmedTitle = jobTitle.trim();
+    if (!trimmedCompany || !trimmedTitle) return;
+    const job = buildJob(true);
+    if (!job) return;
+    onAdd(job);
+    reset();
     onClose();
   };
 
@@ -101,10 +124,51 @@ export default function AddJobModal({ open, onClose, onAdd, onEdit, editJob, def
       <Box onClick={onClose} sx={addJobModalSx.overlay}>
         <Box component="form" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} sx={addJobModalSx.card}>
           <Box sx={addJobModalSx.header}>
-            <Typography sx={addJobModalSx.title}>{isEditing ? "Edit Job" : "Add Job"}</Typography>
+            <Typography sx={addJobModalSx.title}>{isEditing ? "Edit Job" : "Add New Job"}</Typography>
             <Button type="button" onClick={onClose} sx={addJobModalSx.closeBtn}>
               <CloseRoundedIcon fontSize="small" />
             </Button>
+          </Box>
+
+          {/* Company Name + Logo side by side */}
+          <Box sx={addJobModalSx.grid2}>
+            <Field label="Company Name *">
+              <Autocomplete
+                freeSolo
+                options={companyNames}
+                value={companyName}
+                onInputChange={(_, val) => setCompanyName(val)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="e.g. Google, Check Point..."
+                    size="small"
+                    sx={addJobModalSx.input}
+                  />
+                )}
+              />
+            </Field>
+            <Field label="Company Logo">
+              {knownCompany ? (
+                <Box sx={addJobModalSx.logoPreview}>
+                  <Box
+                    component="img"
+                    src={knownCompany.logo}
+                    alt={companyName}
+                    sx={{ width: 24, height: 24, objectFit: "contain" }}
+                  />
+                  <Typography sx={addJobModalSx.logoHint}>Auto-filled</Typography>
+                </Box>
+              ) : (
+                <TextField
+                  value={companyLogoUrl}
+                  onChange={(e) => setCompanyLogoUrl(e.target.value)}
+                  placeholder="https://logo-url.com/logo.png"
+                  size="small"
+                  sx={addJobModalSx.input}
+                />
+              )}
+            </Field>
           </Box>
 
           <Field label="Job Title *">
@@ -114,23 +178,6 @@ export default function AddJobModal({ open, onClose, onAdd, onEdit, editJob, def
               placeholder="e.g. Frontend Developer"
               size="small"
               sx={addJobModalSx.input}
-            />
-          </Field>
-
-          <Field label="Company Name *">
-            <Autocomplete
-              freeSolo
-              options={companyNames}
-              value={companyName}
-              onInputChange={(_, val) => setCompanyName(val)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder="e.g. Google, Check Point..."
-                  size="small"
-                  sx={addJobModalSx.input}
-                />
-              )}
             />
           </Field>
 
@@ -260,11 +307,17 @@ export default function AddJobModal({ open, onClose, onAdd, onEdit, editJob, def
           )}
 
           <Box sx={addJobModalSx.actions}>
+            {!isEditing && (
+              <Button type="button" onClick={handleSaveAsDraft} sx={addJobModalSx.draftBtn}>
+                Save As Draft
+              </Button>
+            )}
+            <Box sx={{ flex: 1 }} />
             <Button type="button" onClick={() => { reset(); onClose(); }} sx={addJobModalSx.secondaryBtn}>
               Cancel
             </Button>
             <Button type="submit" sx={addJobModalSx.primaryBtn}>
-              {isEditing ? "Save" : "Add"}
+              {isEditing ? "Save" : "Add Job"}
             </Button>
           </Box>
         </Box>

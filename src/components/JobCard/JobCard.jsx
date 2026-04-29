@@ -126,10 +126,8 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
             <Typography sx={jobCardSx.companyName}>
               {job.companyName}
             </Typography>
-            <Typography sx={jobCardSx.subtitle}>{job.jobTitle}</Typography>
             <Typography sx={jobCardSx.subtitle}>
-              {job.location ? ` ${job.location} ,` : ""}
-              {job.workType ? ` ${job.workType}` : ""}
+              {[job.jobTitle, job.location, job.workType].filter(Boolean).join(", ")}
             </Typography>
           </Box>
         </Box>
