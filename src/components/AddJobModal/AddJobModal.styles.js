@@ -11,6 +11,8 @@ export const addJobModalSx = {
   },
   card: {
     width: "min(520px, 100%)",
+    maxHeight: "90vh",
+    overflowY: "auto",
     background: "var(--panel)",
     border: "1px solid var(--border)",
     borderRadius: "16px",
