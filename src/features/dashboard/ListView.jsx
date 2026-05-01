@@ -5,6 +5,7 @@ import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EastOutlinedIcon from "@mui/icons-material/EastOutlined";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { listViewSx, getStatusColor } from "./ListView.styles";
 
 export default function ListView({
@@ -14,6 +15,7 @@ export default function ListView({
   onDelete,
   onSelect,
   onEdit,
+  onAdd,
   onExport,
 }) {
   const grouped = useMemo(() => {
@@ -166,9 +168,11 @@ export default function ListView({
                 )}
 
                 {count === 0 ? (
-                  <Typography sx={listViewSx.empty}>
-                    No jobs here yet.
-                  </Typography>
+                  <Box sx={listViewSx.emptyBox}>
+                    <Typography sx={listViewSx.emptyText}>
+                      No jobs in {status} yet
+                    </Typography>
+                  </Box>
                 ) : (
                   list.map((job, index) => {
                     const checked = activeSelectedIds.has(job.id);
@@ -194,21 +198,24 @@ export default function ListView({
                           />
                         </Box>
 
-                        <Box sx={{ minWidth: 0 }}>
-                          <Box sx={listViewSx.titleRow}>
-                            <Typography
-                              component="span"
-                              sx={listViewSx.company}
-                            >
-                              {job.companyName}
-                            </Typography>
-                            <Typography component="span" sx={listViewSx.role}>
-                              {job.jobTitle}
-                            </Typography>
-                            <Typography component="span" sx={listViewSx.meta}>
-                              {job.location ? `, ${job.location}` : ""}
-                              {job.workType ? ` - ${job.workType}` : ""}
-                            </Typography>
+                        <Box sx={listViewSx.jobCell}>
+                          <JobLogo job={job} statusColor={statusColor} />
+                          <Box sx={{ minWidth: 0 }}>
+                            <Box sx={listViewSx.titleRow}>
+                              <Typography
+                                component="span"
+                                sx={listViewSx.company}
+                              >
+                                {job.companyName}
+                              </Typography>
+                              <Typography component="span" sx={listViewSx.role}>
+                                {job.jobTitle}
+                              </Typography>
+                              <Typography component="span" sx={listViewSx.meta}>
+                                {job.location ? `, ${job.location}` : ""}
+                                {job.workType ? ` - ${job.workType}` : ""}
+                              </Typography>
+                            </Box>
                           </Box>
                         </Box>
 
@@ -327,6 +334,16 @@ export default function ListView({
                     );
                   })
                 )}
+
+                <Box sx={listViewSx.addNewWrap}>
+                  <Button
+                    startIcon={<AddRoundedIcon fontSize="small" />}
+                    onClick={(e) => { e.stopPropagation(); onAdd?.(status); }}
+                    sx={listViewSx.addNewBtn}
+                  >
+                    Add New
+                  </Button>
+                </Box>
               </Paper>
             )}
           </Box>
@@ -385,11 +402,36 @@ export default function ListView({
               disabled={!onExport}
               sx={listViewSx.ghostBtn}
             >
-              Export
+              Export Excel
             </Button>
           </Box>
         </Paper>
       )}
     </Box>
   );
+}
+
+function JobLogo({ job, statusColor }) {
+  const [failed, setFailed] = useState(false);
+  return (
+    <Box sx={listViewSx.logoCircle(statusColor)}>
+      {job.companyLogo && !failed ? (
+        <Box
+          component="img"
+          src={job.companyLogo}
+          alt={job.companyName}
+          onError={() => setFailed(true)}
+          sx={{ width: 22, height: 22, objectFit: "contain", borderRadius: "3px" }}
+        />
+      ) : (
+        getInitials(job.companyName)
+      )}
+    </Box>
+  );
+}
+
+function getInitials(name) {
+  if (!name) return "*";
+  const parts = name.trim().split(/\s+/).slice(0, 2);
+  return parts.map((p) => p[0]?.toUpperCase()).join("");
 }

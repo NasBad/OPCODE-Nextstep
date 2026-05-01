@@ -83,6 +83,12 @@ export default function Dashboard({ searchQuery = "", jobs = [], onAdd, onDelete
     if (selectedJob?.id === updatedJob.id) setSelectedJob(updatedJob);
   };
 
+  const handleSaveNotes = (jobId, newNotes) => {
+    const job = jobs.find((j) => j.id === jobId);
+    if (!job) return;
+    saveEdit({ ...job, notes: newNotes });
+  };
+
   const onSelectJob = (job) => {
     setSelectedJob(job);
     setDrawerOpen(true);
@@ -113,6 +119,7 @@ export default function Dashboard({ searchQuery = "", jobs = [], onAdd, onDelete
           onDelete={handleDelete}
           onSelect={onSelectJob}
           onEdit={openEdit}
+          onAdd={(status) => { setAddStatus(status); setAddOpen(true); }}
         />
       )}
 
@@ -138,6 +145,7 @@ export default function Dashboard({ searchQuery = "", jobs = [], onAdd, onDelete
         open={drawerOpen}
         job={selectedJob}
         onClose={() => setDrawerOpen(false)}
+        onSaveNotes={handleSaveNotes}
       />
     </Box>
   );
