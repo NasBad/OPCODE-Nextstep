@@ -98,8 +98,13 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
     setMoveModalOpen(true);
   };
 
+  const moveStatuses = STATUSES.filter(
+    (s) => !(s === "Rejected" && fromStatus === "Wishlist"),
+  );
+
   const confirmMove = () => {
     if (!toStatus || toStatus === fromStatus) return;
+    if (toStatus === "Rejected" && fromStatus === "Wishlist") return;
     if (moveNeedsInterviewing && !moveInterviewDate) return;
     onMoveTo(job.id, toStatus);
     setMoveModalOpen(false);
@@ -193,8 +198,8 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
               <Box sx={jobCardSx.field}>
                 <Typography sx={jobCardSx.label}>New Status</Typography>
                 <Select value={toStatus} onChange={(e) => setToStatus(e.target.value)} size="small" sx={jobCardSx.input("var(--panel)")} MenuProps={{ sx: { zIndex: 1200000 } }}>
-                  {STATUSES.map((s) => (
-                    <MenuItem key={s} value={s} disabled={s === fromStatus || (s === "Rejected" && fromStatus === "Wishlist")}>{s}</MenuItem>
+                  {moveStatuses.map((s) => (
+                    <MenuItem key={s} value={s} disabled={s === fromStatus}>{s}</MenuItem>
                   ))}
                 </Select>
               </Box>
