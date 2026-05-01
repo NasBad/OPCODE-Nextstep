@@ -192,7 +192,7 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
               </Box>
               <Box sx={jobCardSx.field}>
                 <Typography sx={jobCardSx.label}>New Status</Typography>
-                <Select value={toStatus} onChange={(e) => setToStatus(e.target.value)} size="small" sx={jobCardSx.input("var(--panel)")} MenuProps={{ disablePortal: true }}>
+                <Select value={toStatus} onChange={(e) => setToStatus(e.target.value)} size="small" sx={jobCardSx.input("var(--panel)")} MenuProps={{ sx: { zIndex: 1200000 } }}>
                   {STATUSES.map((s) => (
                     <MenuItem key={s} value={s} disabled={s === fromStatus}>{s}</MenuItem>
                   ))}
