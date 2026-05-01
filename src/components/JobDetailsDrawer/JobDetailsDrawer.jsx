@@ -1,15 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Button, Chip, TextField, Typography } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
+import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+import BusinessCenterOutlinedIcon from "@mui/icons-material/BusinessCenterOutlined";
+import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import { useToast } from "../Toast/toastStore";
 import { jobDetailsDrawerSx } from "./JobDetailsDrawer.styles";
 
-export default function JobDetailsDrawer({ job, open, onClose }) {
+export default function JobDetailsDrawer({ job, open, onClose, onSaveNotes }) {
   const { addToast } = useToast();
   const [logoFailed, setLogoFailed] = useState(false);
+  const [notes, setNotes] = useState(job?.notes || "");
   const statusColor = getStatusColor(job?.status);
+
+  useEffect(() => {
+    setNotes(job?.notes || "");
+    setLogoFailed(false);
+  }, [job?.id]);
+
   if (!open) return null;
+
+  const handleSaveNotes = () => {
+    if (onSaveNotes) {
+      onSaveNotes(job.id, notes);
+    } else {
+      addToast("warning", "Warning", "Feature Not Ready Yet");
+    }
+  };
 
   return (
     <>
@@ -51,21 +69,29 @@ export default function JobDetailsDrawer({ job, open, onClose }) {
 
         <Box sx={jobDetailsDrawerSx.body}>
           <Section title="Details">
-            <InfoRow label="Location" value={job?.location || "-"} />
-            <InfoRow label="Work Type" value={job?.workType || "-"} />
-            <InfoRow label="Job URL" value={job?.jobUrl || "-"} isLink />
+            <InfoRow
+              icon={<LocationOnOutlinedIcon sx={{ fontSize: 15 }} />}
+              label="Location"
+              value={job?.location || "-"}
+            />
+            <InfoRow
+              icon={<BusinessCenterOutlinedIcon sx={{ fontSize: 15 }} />}
+              label="Work Type"
+              value={job?.workType || "-"}
+            />
+            <InfoRow
+              icon={<OpenInNewOutlinedIcon sx={{ fontSize: 15 }} />}
+              label="Job URL"
+              value={job?.jobUrl || "-"}
+              isLink
+            />
           </Section>
 
           <Section title="Tags">
             {Array.isArray(job?.tags) && job.tags.length > 0 ? (
               <Box sx={jobDetailsDrawerSx.tags}>
                 {job.tags.map((t) => (
-                  <Chip
-                    key={t}
-                    label={t}
-                    size="small"
-                    sx={jobDetailsDrawerSx.tag(statusColor)}
-                  />
+                  <Chip key={t} label={t} size="small" sx={jobDetailsDrawerSx.tag(statusColor)} />
                 ))}
               </Box>
             ) : (
@@ -73,8 +99,8 @@ export default function JobDetailsDrawer({ job, open, onClose }) {
             )}
           </Section>
 
-          <Section title="Extra">
-            <InfoRow label="Created" value={fmtDate(job?.createdAt)} />
+          <Section title="Extra Details">
+            <InfoRow label="Applied At" value={fmtDate(job?.createdAt)} />
             <InfoRow label="Updated" value={fmtDate(job?.updatedAt)} />
             <InfoRow label="Platform" value={job?.platform || "-"} />
           </Section>
@@ -84,18 +110,21 @@ export default function JobDetailsDrawer({ job, open, onClose }) {
               multiline
               minRows={4}
               placeholder="Add a note here..."
-              defaultValue={job?.notes || ""}
-              InputProps={{ readOnly: true }}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
               sx={jobDetailsDrawerSx.textarea}
             />
-            <Typography sx={jobDetailsDrawerSx.noteHint}>
-              (Later we can make notes editable + saved)
-            </Typography>
+            <Box sx={jobDetailsDrawerSx.noteActions}>
+              <Button onClick={handleSaveNotes} sx={jobDetailsDrawerSx.saveBtn}>
+                Save Notes
+              </Button>
+            </Box>
           </Section>
         </Box>
 
         <Box sx={jobDetailsDrawerSx.footer}>
           <Button
+            fullWidth
             onClick={() => addToast("warning", "Warning", "Feature Not Ready Yet")}
             startIcon={<EventAvailableRoundedIcon />}
             sx={jobDetailsDrawerSx.primaryBtn}
@@ -117,16 +146,17 @@ function Section({ title, children }) {
   );
 }
 
-function InfoRow({ label, value, isLink }) {
+function InfoRow({ icon, label, value, isLink }) {
   const isUrl = typeof value === "string" && value.startsWith("http");
   return (
     <Box sx={jobDetailsDrawerSx.row}>
-      <Typography sx={jobDetailsDrawerSx.rowLabel}>{label}</Typography>
+      <Box sx={jobDetailsDrawerSx.rowLabelGroup}>
+        {icon && <Box sx={jobDetailsDrawerSx.rowIcon}>{icon}</Box>}
+        <Typography sx={jobDetailsDrawerSx.rowLabel}>{label}</Typography>
+      </Box>
       <Typography sx={jobDetailsDrawerSx.rowValue}>
         {isLink && isUrl ? (
-          <a href={value} target="_blank" rel="noreferrer">
-            {value}
-          </a>
+          <a href={value} target="_blank" rel="noreferrer">{value}</a>
         ) : (
           value
         )}
