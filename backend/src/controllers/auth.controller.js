@@ -1,12 +1,15 @@
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const prisma = require("../config/prisma");
+const jwt    = require("jsonwebtoken");
+const { v4: uuidv4 } = require("uuid");
+
+// In-memory users array (resets when server restarts)
+const users = [];
 
 exports.register = async (req, res) => {
   const { name, email, password } = req.body;
 
   // Check if email already exists
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const existing = users.find((u) => u.email === email);
   if (existing) {
     return res.status(400).json({ message: "Email already in use" });
   }
@@ -14,10 +17,9 @@ exports.register = async (req, res) => {
   // Hash the password
   const passwordHash = await bcrypt.hash(password, 10);
 
-  // Save user to database
-  const user = await prisma.user.create({
-    data: { name, email, passwordHash },
-  });
+  // Save user to mock array
+  const user = { id: uuidv4(), name, email, passwordHash, createdAt: new Date().toISOString() };
+  users.push(user);
 
   // Create token
   const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -28,8 +30,8 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
-  // Find user by email
-  const user = await prisma.user.findUnique({ where: { email } });
+  // Find user in mock array
+  const user = users.find((u) => u.email === email);
   if (!user) {
     return res.status(400).json({ message: "Invalid email or password" });
   }
