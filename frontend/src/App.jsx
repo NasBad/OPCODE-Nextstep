@@ -1,20 +1,31 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import AppShell from "./AppShell";
 import Dashboard from "./pages/Dashboard";
 import ArchivePage from "./pages/ArchivePage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import { jobsMock } from "./data/jobsMock";
 import { useToast } from "./components/Toast/toastStore";
 
-export default function App() {
-  const [theme, setTheme] = useState("light");
+function PrivateRoute({ children }) {
+  const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/login" replace />;
+}
+
+function GuestRoute({ children }) {
+  const token = localStorage.getItem("token");
+  return token ? <Navigate to="/dashboard" replace /> : children;
+}
+
+function MainLayout() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const page = location.pathname === "/archive" ? "archive" : "dashboard";
+
   const [query, setQuery] = useState("");
-  const [page, setPage] = useState("dashboard");
   const [jobs, setJobs] = useState(jobsMock);
   const { addToast } = useToast();
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
 
   const addJob = (newJob) => {
     setJobs((prev) => [newJob, ...prev]);
@@ -77,10 +88,8 @@ export default function App() {
     <AppShell
       searchValue={query}
       onSearchChange={setQuery}
-      onToggleTheme={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
-      theme={theme}
       currentPage={page}
-      onNavigate={setPage}
+      onNavigate={(p) => navigate(`/${p}`)}
     >
       {page === "dashboard" ? (
         <Dashboard
@@ -95,5 +104,17 @@ export default function App() {
         <ArchivePage jobs={archivedJobs} onRestore={restoreJob} />
       )}
     </AppShell>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+      <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+      <Route path="/dashboard" element={<PrivateRoute><MainLayout /></PrivateRoute>} />
+      <Route path="/archive" element={<PrivateRoute><MainLayout /></PrivateRoute>} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
   );
 }
