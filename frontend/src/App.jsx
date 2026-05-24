@@ -8,6 +8,16 @@ import RegisterPage from "./pages/RegisterPage";
 import { jobsMock } from "./data/jobsMock";
 import { useToast } from "./components/Toast/toastStore";
 
+function PrivateRoute({ children }) {
+  const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/login" replace />;
+}
+
+function GuestRoute({ children }) {
+  const token = localStorage.getItem("token");
+  return token ? <Navigate to="/dashboard" replace /> : children;
+}
+
 function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -100,11 +110,11 @@ function MainLayout() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/dashboard" element={<MainLayout />} />
-      <Route path="/archive" element={<MainLayout />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+      <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+      <Route path="/dashboard" element={<PrivateRoute><MainLayout /></PrivateRoute>} />
+      <Route path="/archive" element={<PrivateRoute><MainLayout /></PrivateRoute>} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

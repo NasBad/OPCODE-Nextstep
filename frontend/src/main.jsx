@@ -16,7 +16,7 @@ const queryClient = new QueryClient({
 });
 
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
+  <BrowserRouter basename="/OPCODE-Nextstep">
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <CssBaseline />
