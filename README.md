@@ -1,8 +1,12 @@
 # 🚀 NextStep — Job Application Tracker
 
-**NextStep** is a web application that helps job seekers organize, track, and manage their entire recruitment process in one place. Built as part of OPCODE Club training.
+**NextStep** is a full-stack web application that helps job seekers organize, track, and manage their entire recruitment process in one place. Built as part of OPCODE Club training.
 
 🔗 **Live Demo:** [NasBad.github.io/OPCODE-Nextstep](https://NasBad.github.io/OPCODE-Nextstep)
+
+---
+
+![NextStep Dashboard](screenshots/dashboard.png)
 
 ---
 
@@ -16,19 +20,21 @@ NextStep lets you track every job application through the full recruitment lifec
 4. **Offer** — Offers you received
 5. **Rejected** — Applications that didn't work out
 
-You can view your jobs as a **Kanban board** (columns) or a **List view**, search and filter, write private notes per job, and archive old applications.
-
 ---
 
 ## ✨ Features
 
-- Kanban board and list view
+- **Kanban board** and **List view**
 - Add, edit, move, and archive job applications
 - Status tracking with timestamps
+- **Follow Up badge** — alerts when a job hasn't moved in 7+ days
+- Company logos auto-fetched from company name
 - Private notes per job
-- Search and filter
+- Search and filter by title, company, tags
 - Dark / Light mode
-- User authentication (login / register)
+- User authentication (register / login / logout)
+- Real backend API with JWT authentication
+- Data persists per user account
 
 ---
 
@@ -38,9 +44,10 @@ You can view your jobs as a **Kanban board** (columns) or a **List view**, searc
 |-------|-----------|
 | Frontend | React + Vite + Material UI |
 | Data Fetching | React Query + Axios |
+| Routing | React Router DOM |
 | Backend | Node.js + Express |
-| Database | PostgreSQL + Prisma |
 | Auth | JWT + bcrypt |
+| Database | PostgreSQL + Prisma (ready to connect) |
 
 ---
 
@@ -48,9 +55,9 @@ You can view your jobs as a **Kanban board** (columns) or a **List view**, searc
 
 | Name | GitHub | Role |
 |------|--------|------|
-| Mahmoud | [@mahmoudz2000](https://github.com/mahmoudz2000) | Backend lead, auth, React Query setup |
-| Naseem | [@NasBad](https://github.com/NasBad) | Frontend lead, validation, login/register pages |
-| Tarek | — | Jobs CRUD endpoints + frontend connection |
+| Mahmoud | [@mahmoudz2000](https://github.com/mahmoudz2000) | Backend lead — auth, jobs API, React Query integration |
+| Naseem | [@NasBad](https://github.com/NasBad) | Frontend lead — UI, validation middleware, login/register pages |
+| Tarek | — | Jobs CRUD, frontend-backend connection |
 
 ---
 
@@ -64,16 +71,16 @@ OPCODE-Nextstep/
 │   │   ├── components/    # reusable UI components
 │   │   ├── features/      # dashboard, kanban, list view
 │   │   ├── pages/         # Dashboard, Archive, Login, Register
-│   │   └── main.jsx       # app entry point (QueryClientProvider here)
+│   │   └── main.jsx       # app entry (QueryClientProvider + BrowserRouter)
 │   └── package.json
 └── backend/               # Express API — the server
     ├── src/
     │   ├── routes/        # auth, jobs, user, status
     │   ├── controllers/   # auth, jobs, user logic
-    │   ├── middleware/     # JWT auth + validation
+    │   ├── middleware/     # JWT auth + input validation
     │   └── index.js       # server entry point
     ├── prisma/
-    │   └── schema.prisma  # database tables (User + Job)
+    │   └── schema.prisma  # database schema (User + Job)
     └── package.json
 ```
 
@@ -81,15 +88,9 @@ OPCODE-Nextstep/
 
 ## 🖥️ Running Locally
 
-**Frontend**
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Runs on `http://localhost:5173`
+> You need two terminals open at the same time.
 
-**Backend**
+**Terminal 1 — Backend**
 ```bash
 cd backend
 npm install
@@ -98,57 +99,25 @@ npm run dev
 ```
 Runs on `http://localhost:5000`
 
----
+**Terminal 2 — Frontend**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Runs on `http://localhost:5173`
 
-## ✅ What's Done
-
-| Task | Who | Status |
-|------|-----|--------|
-| Kanban board UI | Naseem + Mahmoud | ✅ Done |
-| List view | Naseem + Mahmoud | ✅ Done |
-| Add / Edit / Delete / Restore jobs | Naseem + Mahmoud | ✅ Done |
-| Archive page | Naseem + Mahmoud | ✅ Done |
-| Dark / Light mode | Naseem + Mahmoud | ✅ Done |
-| Search & filter | Naseem + Mahmoud | ✅ Done |
-| Backend auth (register, login, logout) | Mahmoud | ✅ Done |
-| JWT auth middleware | Mahmoud | ✅ Done |
-| React Query setup + API layer | Mahmoud | ✅ Done |
+> **Note:** The GitHub Pages demo uses mock data and doesn't require the backend. The full experience (real login, data saved per user) requires running both servers locally.
 
 ---
 
-## ⏳ What Still Needs to Be Done
+## 🌿 Git Rules
 
-### Naseem — `backend/middleware` + `frontend/auth-pages`
-1. Create `backend/src/middleware/validate.middleware.js`
-   - Validate: name not empty, email format, password min 6 chars
-   - Return `400` with clear message if validation fails
-2. Create Login page in `frontend/src/pages/LoginPage.jsx`
-   - Use `useMutation` from React Query
-   - Call `login()` from `src/api/auth.api.js`
-   - Save token to `localStorage` on success
-3. Create Register page in `frontend/src/pages/RegisterPage.jsx`
-   - Use `useMutation` from React Query
-   - Call `register()` from `src/api/auth.api.js`
-
-### Tarek — `backend/jobs` + `frontend/connect-jobs`
-1. Build all job endpoints in `backend/src/controllers/job.controller.js`
-   - Use in-memory array (no database yet)
-   - GET `/api/jobs`, POST `/api/jobs`, PUT `/api/jobs/:id`
-   - PATCH `/api/jobs/:id/status`, DELETE `/api/jobs/:id`
-   - PATCH `/api/jobs/:id/restore`
-   - GET `/api/jobs/:id/notes`, PATCH `/api/jobs/:id/notes`
-2. Wire routes in `backend/src/routes/job.routes.js`
-3. After backend is done → connect frontend:
-   - In `frontend/src/App.jsx` replace `useState(jobsMock)` with `useQuery(["jobs"], getJobs)`
-   - Replace `addJob`, `deleteJob`, `moveTo`, `editJob` with `useMutation`
-   - After each mutation call `queryClient.invalidateQueries(["jobs"])`
+- Branch naming: `frontend/feature-name` or `backend/feature-name`
+- Never push directly to `main`
+- Always open a PR and wait for review before merging
+- Test backend endpoints with Postman before opening a PR
 
 ---
 
-## 🌿 Branch Naming & Git Rules
-
-- `frontend/feature-name` — frontend changes
-- `backend/feature-name` — backend changes
-- Never push directly to main
-- Always open a PR and wait for Mahmoud to review before merging
-- Test your endpoints with Postman before opening a PR
+*NextStep — OPCODE Club*
