@@ -1,12 +1,13 @@
-import { useState } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AppShell from "./AppShell";
 import Dashboard from "./pages/Dashboard";
 import ArchivePage from "./pages/ArchivePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import { jobsMock } from "./data/jobsMock";
 import { useToast } from "./components/Toast/toastStore";
+import * as jobsApi from "./api/jobs.api";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -19,69 +20,53 @@ function GuestRoute({ children }) {
 }
 
 function MainLayout() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const page = location.pathname === "/archive" ? "archive" : "dashboard";
-
+  const navigate      = useNavigate();
+  const location      = useLocation();
+  const page          = location.pathname === "/archive" ? "archive" : "dashboard";
+  const queryClient   = useQueryClient();
+  const { addToast }  = useToast();
   const [query, setQuery] = useState("");
-  const [jobs, setJobs] = useState(jobsMock);
-  const { addToast } = useToast();
 
-  const addJob = (newJob) => {
-    setJobs((prev) => [newJob, ...prev]);
-    addToast("success", "Success", `Added to ${newJob.status}`);
-  };
+  // Fetch all jobs from backend
+  const { data: jobs = [] } = useQuery({
+    queryKey: ["jobs"],
+    queryFn: jobsApi.getJobs,
+  });
 
-  const deleteJob = (jobId) => {
-    const job = jobs.find((j) => j.id === jobId);
-    setJobs((prev) =>
-      prev.map((j) =>
-        j.id === jobId
-          ? { ...j, isDeleted: true, updatedAt: new Date().toISOString() }
-          : j,
-      ),
-    );
-    addToast("success", "Archived", `${job?.companyName ?? "Job"} moved to Archive`);
-  };
+  // Helper to refresh jobs list after any change
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ["jobs"] });
 
-  const restoreJob = (jobId) => {
-    const job = jobs.find((j) => j.id === jobId);
-    setJobs((prev) =>
-      prev.map((j) =>
-        j.id === jobId
-          ? { ...j, isDeleted: false, updatedAt: new Date().toISOString() }
-          : j,
-      ),
-    );
-    addToast("success", "Restored", `${job?.companyName ?? "Job"} restored to board`);
-  };
+  const addJobMutation = useMutation({
+    mutationFn: jobsApi.addJob,
+    onSuccess: (job) => { refresh(); addToast("success", "Success", `Added to ${job.status}`); },
+    onError: () => addToast("error", "Error", "Failed to add job"),
+  });
 
-  const moveTo = (jobId, newStatus) => {
-    const job = jobs.find((j) => j.id === jobId);
-    if (!job) { addToast("error", "Error", "Job not found"); return; }
-    if (job.status === newStatus) { addToast("warning", "Warning", "Already in this column"); return; }
-    setJobs((prev) =>
-      prev.map((j) =>
-        j.id === jobId
-          ? { ...j, status: newStatus, updatedAt: new Date().toISOString() }
-          : j,
-      ),
-    );
-    addToast("success", "Success", `Moved to ${newStatus}`);
-  };
+  const deleteJobMutation = useMutation({
+    mutationFn: jobsApi.deleteJob,
+    onSuccess: () => { refresh(); addToast("success", "Archived", "Job moved to Archive"); },
+    onError: () => addToast("error", "Error", "Failed to archive job"),
+  });
 
-  const editJob = (updatedJob) => {
-    setJobs((prev) =>
-      prev.map((j) =>
-        j.id === updatedJob.id
-          ? { ...updatedJob, updatedAt: new Date().toISOString() }
-          : j,
-      ),
-    );
-    addToast("success", "Success", "Job updated");
-  };
+  const restoreJobMutation = useMutation({
+    mutationFn: jobsApi.restoreJob,
+    onSuccess: () => { refresh(); addToast("success", "Restored", "Job restored to board"); },
+    onError: () => addToast("error", "Error", "Failed to restore job"),
+  });
 
-  const activeJobs = jobs.filter((j) => !j.isDeleted);
+  const moveToMutation = useMutation({
+    mutationFn: ({ id, status }) => jobsApi.updateJobStatus(id, status),
+    onSuccess: (job) => { refresh(); addToast("success", "Success", `Moved to ${job.status}`); },
+    onError: () => addToast("error", "Error", "Failed to move job"),
+  });
+
+  const editJobMutation = useMutation({
+    mutationFn: (job) => jobsApi.updateJob(job.id, job),
+    onSuccess: () => { refresh(); addToast("success", "Success", "Job updated"); },
+    onError: () => addToast("error", "Error", "Failed to update job"),
+  });
+
+  const activeJobs   = jobs.filter((j) => !j.isDeleted);
   const archivedJobs = jobs.filter((j) => j.isDeleted || j.status === "Rejected");
 
   return (
@@ -95,13 +80,16 @@ function MainLayout() {
         <Dashboard
           searchQuery={query}
           jobs={activeJobs}
-          onAdd={addJob}
-          onDelete={deleteJob}
-          onMoveTo={moveTo}
-          onEdit={editJob}
+          onAdd={(job) => addJobMutation.mutate(job)}
+          onDelete={(id) => deleteJobMutation.mutate(id)}
+          onMoveTo={(id, status) => moveToMutation.mutate({ id, status })}
+          onEdit={(job) => editJobMutation.mutate(job)}
         />
       ) : (
-        <ArchivePage jobs={archivedJobs} onRestore={restoreJob} />
+        <ArchivePage
+          jobs={archivedJobs}
+          onRestore={(id) => restoreJobMutation.mutate(id)}
+        />
       )}
     </AppShell>
   );
@@ -110,11 +98,11 @@ function MainLayout() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
-      <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+      <Route path="/login"     element={<GuestRoute><LoginPage /></GuestRoute>} />
+      <Route path="/register"  element={<GuestRoute><RegisterPage /></GuestRoute>} />
       <Route path="/dashboard" element={<PrivateRoute><MainLayout /></PrivateRoute>} />
-      <Route path="/archive" element={<PrivateRoute><MainLayout /></PrivateRoute>} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="/archive"   element={<PrivateRoute><MainLayout /></PrivateRoute>} />
+      <Route path="*"          element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

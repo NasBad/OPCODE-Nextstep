@@ -1,9 +1,13 @@
-const express = require("express");
-const router  = express.Router();
+const express        = require("express");
+const router         = express.Router();
+const authMiddleware = require("../middleware/auth.middleware");
+const { getProfile, updateProfile, changePassword } = require("../controllers/user.controller");
 
-// TODO: implement user routes
-// GET /api/users/me
-// PUT /api/users/me
-// PUT /api/users/me/password
+// All user routes require a valid token
+router.use(authMiddleware);
+
+router.get("/me",          getProfile);
+router.put("/me",          updateProfile);
+router.put("/me/password", changePassword);
 
 module.exports = router;

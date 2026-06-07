@@ -1,15 +1,21 @@
-const express = require("express");
-const router  = express.Router();
+const express    = require("express");
+const router     = express.Router();
+const authMiddleware = require("../middleware/auth.middleware");
+const {
+  getJobs, addJob, updateJob, updateJobStatus,
+  deleteJob, restoreJob, getNotes, saveNotes,
+} = require("../controllers/job.controller");
 
-// TODO: implement job routes
-// GET    /api/jobs
-// POST   /api/jobs
-// PUT    /api/jobs/:id
-// PATCH  /api/jobs/:id/status
-// DELETE /api/jobs/:id
-// PATCH  /api/jobs/:id/restore
-// GET    /api/jobs/:id/notes
-// PATCH  /api/jobs/:id/notes
-// GET    /api/jobs/export
+// All job routes require a valid token
+router.use(authMiddleware);
+
+router.get("/",                getJobs);
+router.post("/",               addJob);
+router.put("/:id",             updateJob);
+router.patch("/:id/status",    updateJobStatus);
+router.delete("/:id",          deleteJob);
+router.patch("/:id/restore",   restoreJob);
+router.get("/:id/notes",       getNotes);
+router.patch("/:id/notes",     saveNotes);
 
 module.exports = router;

@@ -3,7 +3,9 @@ const jwt    = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 
 // In-memory users array (resets when server restarts)
+// Exported so user.controller can access the same array
 const users = [];
+exports.users = users;
 
 exports.register = async (req, res) => {
   const { name, email, password } = req.body;
