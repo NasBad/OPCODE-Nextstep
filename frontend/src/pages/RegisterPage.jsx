@@ -15,6 +15,7 @@ export default function RegisterPage() {
     mutationFn: register,
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userName", data.user?.name || name);
       navigate("/dashboard", { replace: true });
     },
   });
@@ -28,7 +29,7 @@ export default function RegisterPage() {
 
   return (
     <Box sx={authPageSx.root}>
-      <Box component="form" onSubmit={handleSubmit} sx={authPageSx.card}>
+      <Box component="form" onSubmit={handleSubmit} sx={authPageSx.card} autoComplete="off">
         <Typography sx={authPageSx.title}>Create your account</Typography>
         <Typography sx={authPageSx.subtitle}>Start tracking your job applications</Typography>
 

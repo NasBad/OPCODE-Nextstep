@@ -31,7 +31,7 @@ export default function Topbar({ searchValue, onSearchChange }) {
           />
         </Box>
 
-        <ProfileMenu name="Naseem Badran" avatarSrc={avatar} />
+        <ProfileMenu name={localStorage.getItem("userName") || "User"} avatarSrc={avatar} />
       </Box>
     </Box>
   );

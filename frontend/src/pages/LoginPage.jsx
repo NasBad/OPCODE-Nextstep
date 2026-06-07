@@ -14,6 +14,7 @@ export default function LoginPage() {
     mutationFn: login,
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userName", data.user?.name || "");
       navigate("/dashboard", { replace: true });
     },
   });
@@ -27,7 +28,7 @@ export default function LoginPage() {
 
   return (
     <Box sx={authPageSx.root}>
-      <Box component="form" onSubmit={handleSubmit} sx={authPageSx.card}>
+      <Box component="form" onSubmit={handleSubmit} sx={authPageSx.card} autoComplete="off">
         <Typography sx={authPageSx.title}>Welcome back</Typography>
         <Typography sx={authPageSx.subtitle}>Sign in to your account</Typography>
 
