@@ -22,9 +22,17 @@ import { jobCardSx } from "./JobCard.styles";
 
 const FOLLOW_UP_DAYS = 7;
 
+// Auto-generate logo URL from company name using favicon service
+const getLogoUrl = (job) => {
+  if (job.companyLogo) return job.companyLogo;
+  const domain = job.companyName?.toLowerCase().replace(/\s+/g, "") + ".com";
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+};
+
 export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
+  const logoUrl = getLogoUrl(job);
   const { theme } = useTheme();
   const [moveModalOpen, setMoveModalOpen] = useState(false);
   const [toStatus, setToStatus] = useState(job.status || STATUSES[0]);
@@ -123,10 +131,10 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
       <Box sx={jobCardSx.topRow}>
         <Box sx={jobCardSx.brandRow}>
           <Box sx={jobCardSx.logoCircle(statusTheme.logoBg)}>
-            {job.companyLogo && !logoFailed ? (
+            {!logoFailed ? (
               <Box
                 component="img"
-                src={job.companyLogo}
+                src={logoUrl}
                 alt={job.companyName}
                 onError={() => setLogoFailed(true)}
                 sx={{ width: 26, height: 26, objectFit: "contain", borderRadius: "4px" }}

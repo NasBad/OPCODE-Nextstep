@@ -5,6 +5,7 @@ import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import KeyboardArrowUpRoundedIcon from "@mui/icons-material/KeyboardArrowUpRounded";
+import { useNavigate } from "react-router-dom";
 import avatar from "../../assets/avatar.png";
 import { useToast } from "../Toast/toastStore";
 import { profileMenuSx } from "./ProfileMenu.styles";
@@ -14,6 +15,12 @@ export default function ProfileMenu({ name = "Naseem Badran", avatarSrc = avatar
   const btnRef = useRef(null);
   const menuRef = useRef(null);
   const { addToast } = useToast();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login", { replace: true });
+  };
 
   const toggle = (e) => {
     e.stopPropagation();
@@ -66,7 +73,7 @@ export default function ProfileMenu({ name = "Naseem Badran", avatarSrc = avatar
             Settings
           </Button>
           <Divider sx={{ my: 0.75, borderColor: "var(--border)" }} />
-          <Button fullWidth onClick={notReady} sx={profileMenuSx.dangerItem}>
+          <Button fullWidth onClick={handleLogout} sx={profileMenuSx.dangerItem}>
             <LogoutRoundedIcon fontSize="small" />
             Logout
           </Button>
