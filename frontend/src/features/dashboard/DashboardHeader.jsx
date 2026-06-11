@@ -5,9 +5,44 @@ import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import { useToast } from "../../components/Toast/toastStore";
 import { dashboardHeaderSx } from "./DashboardHeader.styles";
 
-export default function DashboardHeader({ viewMode, onChangeView }) {
+export default function DashboardHeader({ viewMode, onChangeView, jobs = [] }) {
   const isKanban = viewMode === "kanban";
   const { addToast } = useToast();
+
+  const handleExport = () => {
+    if (jobs.length === 0) {
+      addToast("warning", "No Data", "No jobs to export");
+      return;
+    }
+
+    const headers = ["Company", "Job Title", "Status", "Location", "Work Type", "Tags", "Applied Date", "Platform", "Notes", "Created At", "Updated At"];
+    const rows = jobs.map((j) => [
+      j.companyName || "",
+      j.jobTitle || "",
+      j.status || "",
+      j.location || "",
+      j.workType || "",
+      (j.tags || []).join("; "),
+      j.appliedDate || "",
+      j.platform || "",
+      j.notes || "",
+      j.createdAt ? new Date(j.createdAt).toLocaleDateString() : "",
+      j.updatedAt ? new Date(j.updatedAt).toLocaleDateString() : "",
+    ]);
+
+    const csv = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "nextstep_jobs.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+    addToast("success", "Exported!", `${jobs.length} jobs exported as CSV`);
+  };
 
   return (
     <Box sx={dashboardHeaderSx.row}>
@@ -34,7 +69,7 @@ export default function DashboardHeader({ viewMode, onChangeView }) {
 
       <Button
         type="button"
-        onClick={() => addToast("warning", "Warning", "Feature Not Ready Yet")}
+        onClick={handleExport}
         startIcon={<FileDownloadOutlinedIcon />}
         sx={dashboardHeaderSx.exportBtn}
       >

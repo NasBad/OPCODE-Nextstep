@@ -96,7 +96,7 @@ export default function Dashboard({ searchQuery = "", jobs = [], onAdd, onDelete
 
   return (
     <Box sx={dashboardPageSx.root}>
-      <DashboardHeader viewMode={viewMode} onChangeView={setViewMode} />
+      <DashboardHeader viewMode={viewMode} onChangeView={setViewMode} jobs={jobs} />
 
       {viewMode === "kanban" ? (
         <KanbanBoard
