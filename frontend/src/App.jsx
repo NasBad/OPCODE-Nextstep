@@ -47,7 +47,7 @@ function MockLayout() {
   return (
     <AppShell searchValue={query} onSearchChange={setQuery} currentPage={page} onNavigate={(p) => navigate(`/${p}`)}>
       {page === "dashboard" ? <Dashboard searchQuery={query} jobs={activeJobs} onAdd={addJob} onDelete={deleteJob} onMoveTo={moveTo} onEdit={editJob} />
-        : page === "resume" ? <ResumePage jobs={jobs} />
+        : page === "resume" ? <ResumePage />
         : <ArchivePage jobs={archivedJobs} onRestore={restoreJob} />}
     </AppShell>
   );
@@ -77,7 +77,7 @@ function MainLayout() {
   return (
     <AppShell searchValue={query} onSearchChange={setQuery} currentPage={page} onNavigate={(p) => navigate(`/${p}`)}>
       {page === "dashboard" ? <Dashboard searchQuery={query} jobs={activeJobs} onAdd={(j) => addJobMutation.mutate(j)} onDelete={(id) => deleteJobMutation.mutate(id)} onMoveTo={(id, status) => moveMutation.mutate({ id, status })} onEdit={(j) => editMutation.mutate(j)} />
-        : page === "resume" ? <ResumePage jobs={jobs} />
+        : page === "resume" ? <ResumePage />
         : <ArchivePage jobs={archivedJobs} onRestore={(id) => restoreMutation.mutate(id)} />}
     </AppShell>
   );
