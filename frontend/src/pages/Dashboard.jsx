@@ -5,6 +5,7 @@ import AddJobModal from "../components/AddJobModal/AddJobModal";
 import JobDetailsDrawer from "../components/JobDetailsDrawer/JobDetailsDrawer";
 import { dashboardPageSx } from "./Dashboard.styles";
 import DashboardHeader from "../features/dashboard/DashboardHeader";
+import StatsBar from "../features/dashboard/StatsBar";
 import KanbanBoard from "../features/dashboard/KanbanBoard";
 import ListView from "../features/dashboard/ListView";
 
@@ -97,6 +98,7 @@ export default function Dashboard({ searchQuery = "", jobs = [], onAdd, onDelete
   return (
     <Box sx={dashboardPageSx.root}>
       <DashboardHeader viewMode={viewMode} onChangeView={setViewMode} jobs={jobs} />
+      <StatsBar jobs={jobs} />
 
       {viewMode === "kanban" ? (
         <KanbanBoard
