@@ -16,6 +16,8 @@ import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined
 import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
+import { useToast } from "../Toast/toastStore";
 import { STATUSES } from "../../constants/statuses";
 import useTheme from "../../hooks/useTheme";
 import { jobCardSx } from "./JobCard.styles";
@@ -39,6 +41,30 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
   const [moveInterviewDate, setMoveInterviewDate] = useState("");
   const [moveRound, setMoveRound] = useState("");
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [reminderOpen, setReminderOpen] = useState(false);
+  const [reminderEmail, setReminderEmail] = useState("");
+  const [reminderDate, setReminderDate] = useState("");
+  const [reminderNote, setReminderNote] = useState("");
+  const { addToast } = useToast();
+
+  const reminderKey = `reminder_${job.id}`;
+  const hasReminder = !!localStorage.getItem(reminderKey);
+
+  const openReminder = () => {
+    closeMenu();
+    setReminderEmail(localStorage.getItem("userEmail") || "");
+    setReminderDate("");
+    setReminderNote("");
+    setReminderOpen(true);
+  };
+
+  const submitReminder = () => {
+    if (!reminderEmail || !reminderDate) return;
+    localStorage.setItem(reminderKey, JSON.stringify({ email: reminderEmail, date: reminderDate, note: reminderNote }));
+    setReminderOpen(false);
+    addToast("success", "Reminder Set!", `We'll remind you on ${new Date(reminderDate).toLocaleDateString()}`);
+  };
+
   const kebabRef = useRef(null);
   const menuRef = useRef(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
@@ -160,6 +186,7 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
             <Box sx={jobCardSx.menuInner}>
               <Button type="button" startIcon={<EditOutlinedIcon fontSize="small" />} sx={jobCardSx.menuItem} onClick={() => { closeMenu(); onEdit(job); }}>Edit</Button>
               <Button type="button" startIcon={<EastOutlinedIcon fontSize="small" />} sx={jobCardSx.menuItem} onClick={openMoveModal}>Move to...</Button>
+              <Button type="button" startIcon={<NotificationsOutlinedIcon fontSize="small" />} sx={jobCardSx.menuItem} onClick={openReminder}>Set Reminder</Button>
               <Button type="button" startIcon={<DeleteOutlinedIcon fontSize="small" />} sx={jobCardSx.dangerItem} onClick={() => { closeMenu(); setConfirmDeleteOpen(true); }}>Delete</Button>
             </Box>
           </Box>,
@@ -190,6 +217,50 @@ export default function JobCard({ job, onDelete, onEdit, onMoveTo, onSelect }) {
           <WarningAmberRoundedIcon sx={{ fontSize: 14 }} />
           <Typography sx={jobCardSx.followUpText}>Follow Up Recommended</Typography>
         </Box>
+      )}
+
+      {hasReminder && (() => {
+        const r = JSON.parse(localStorage.getItem(reminderKey));
+        return (
+          <Box sx={jobCardSx.reminderBadge}>
+            <NotificationsOutlinedIcon sx={{ fontSize: 14 }} />
+            <Typography sx={jobCardSx.reminderText}>Reminder: {new Date(r.date).toLocaleDateString()}</Typography>
+          </Box>
+        );
+      })()}
+
+      {/* Reminder modal */}
+      {reminderOpen && createPortal(
+        <Box sx={jobCardSx.modalOverlay} onPointerDown={(e) => e.target === e.currentTarget && setReminderOpen(false)}>
+          <Box sx={jobCardSx.modalBox} onPointerDown={(e) => e.stopPropagation()}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
+              <Box sx={{ width: 32, height: 32, borderRadius: "8px", background: "var(--primary-weak)", display: "grid", placeItems: "center", color: "var(--primary)" }}>
+                <NotificationsOutlinedIcon fontSize="small" />
+              </Box>
+              <Typography sx={jobCardSx.modalTitle} style={{ marginBottom: 0 }}>Set Reminder</Typography>
+            </Box>
+            <Typography sx={{ fontSize: 13, color: "var(--muted)", mb: 1.5 }}>
+              {job.companyName} — {job.jobTitle}
+            </Typography>
+            <Box sx={jobCardSx.field}>
+              <Typography sx={jobCardSx.label}>Your Email</Typography>
+              <TextField type="email" value={reminderEmail} onChange={(e) => setReminderEmail(e.target.value)} placeholder="you@example.com" size="small" sx={jobCardSx.input("var(--panel)")} />
+            </Box>
+            <Box sx={jobCardSx.field}>
+              <Typography sx={jobCardSx.label}>Remind me on</Typography>
+              <TextField type="date" value={reminderDate} onChange={(e) => setReminderDate(e.target.value)} size="small" sx={jobCardSx.input("var(--panel)")} inputProps={{ lang: "en" }} />
+            </Box>
+            <Box sx={jobCardSx.field}>
+              <Typography sx={jobCardSx.label}>Note (optional)</Typography>
+              <TextField value={reminderNote} onChange={(e) => setReminderNote(e.target.value)} placeholder="e.g. Follow up on application" size="small" sx={jobCardSx.input("var(--panel)")} />
+            </Box>
+            <Box sx={jobCardSx.modalActions}>
+              <Button type="button" onClick={() => setReminderOpen(false)} sx={jobCardSx.btnGhost}>Cancel</Button>
+              <Button type="button" onClick={submitReminder} disabled={!reminderEmail || !reminderDate} sx={jobCardSx.btnPrimary}>Set Reminder</Button>
+            </Box>
+          </Box>
+        </Box>,
+        document.body,
       )}
 
       {/* Move Job Status modal */}

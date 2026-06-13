@@ -9,13 +9,17 @@ import { useNavigate } from "react-router-dom";
 import avatar from "../../assets/avatar.png";
 import { useToast } from "../Toast/toastStore";
 import { profileMenuSx } from "./ProfileMenu.styles";
+import ProfileModal from "../ProfileModal/ProfileModal";
 
 export default function ProfileMenu({ name = "Naseem Badran", avatarSrc = avatar }) {
   const [open, setOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const btnRef = useRef(null);
   const menuRef = useRef(null);
   const { addToast } = useToast();
   const navigate = useNavigate();
+
+  const profilePhoto = localStorage.getItem("profilePhoto") || null;
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -50,12 +54,12 @@ export default function ProfileMenu({ name = "Naseem Badran", avatarSrc = avatar
     };
   }, [open]);
 
-  const notReady = () => addToast("warning", "Warning", "Page Not Ready Yet");
-
   return (
+    <>
+    <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
     <Box sx={profileMenuSx.wrap}>
       <Button ref={btnRef} onClick={toggle} sx={profileMenuSx.trigger}>
-        <Box component="img" src={avatarSrc} alt="Profile" sx={profileMenuSx.avatar} />
+        <Box component="img" src={profilePhoto || avatarSrc} alt="Profile" sx={profileMenuSx.avatar} />
         <Box component="span" sx={profileMenuSx.name}>
           {name}
         </Box>
@@ -64,11 +68,11 @@ export default function ProfileMenu({ name = "Naseem Badran", avatarSrc = avatar
 
       {open && (
         <Box ref={menuRef} sx={profileMenuSx.menu}>
-          <Button fullWidth onClick={notReady} sx={profileMenuSx.item}>
+          <Button fullWidth onClick={() => { setOpen(false); setProfileOpen(true); }} sx={profileMenuSx.item}>
             <PersonRoundedIcon fontSize="small" />
             Profile
           </Button>
-          <Button fullWidth onClick={notReady} sx={profileMenuSx.item}>
+          <Button fullWidth onClick={() => { setOpen(false); setProfileOpen(true); }} sx={profileMenuSx.item}>
             <SettingsRoundedIcon fontSize="small" />
             Settings
           </Button>
@@ -80,5 +84,6 @@ export default function ProfileMenu({ name = "Naseem Badran", avatarSrc = avatar
         </Box>
       )}
     </Box>
+    </>
   );
 }

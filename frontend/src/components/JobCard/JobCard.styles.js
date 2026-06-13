@@ -80,4 +80,6 @@ export const jobCardSx = {
   moveRequiredLabel: { fontSize: 12, fontWeight: 700, color: "var(--muted)", mb: 1, textTransform: "uppercase", letterSpacing: "0.05em" },
   followUpBadge: { display: "flex", alignItems: "center", gap: 0.75, px: 1.25, py: 0.75, borderRadius: "8px", background: "#fff7ed", border: "1px solid #fed7aa", color: "#c2410c" },
   followUpText: { fontSize: 12, fontWeight: 700, color: "#c2410c" },
+  reminderBadge: { display: "flex", alignItems: "center", gap: 0.75, px: 1.25, py: 0.75, borderRadius: "8px", background: "#eff6ff", border: "1px solid #bfdbfe", color: "#1d4ed8" },
+  reminderText: { fontSize: 12, fontWeight: 700, color: "#1d4ed8" },
 };
