@@ -49,10 +49,11 @@ export default function Sidebar({ collapsed, onToggleCollapsed, currentPage, onN
           onClick={() => onNavigate?.("dashboard")}
         />
         <NavItem
+          active={currentPage === "resume"}
           collapsed={collapsed}
           icon={<DescriptionOutlinedIcon fontSize="small" />}
           label="Resumes"
-          onClick={notReady}
+          onClick={() => onNavigate?.("resume")}
         />
         <NavItem
           collapsed={collapsed}

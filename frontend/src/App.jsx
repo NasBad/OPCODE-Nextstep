@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AppShell from "./AppShell";
 import Dashboard from "./pages/Dashboard";
 import ArchivePage from "./pages/ArchivePage";
+import ResumePage from "./pages/ResumePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { useToast } from "./components/Toast/toastStore";
@@ -29,7 +30,7 @@ function GuestRoute({ children }) {
 function MockLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const page = location.pathname === "/archive" ? "archive" : "dashboard";
+  const page = location.pathname === "/archive" ? "archive" : location.pathname === "/resume" ? "resume" : "dashboard";
   const { addToast } = useToast();
   const [query, setQuery] = useState("");
   const [jobs, setJobs] = useState(jobsMock);
@@ -45,8 +46,8 @@ function MockLayout() {
 
   return (
     <AppShell searchValue={query} onSearchChange={setQuery} currentPage={page} onNavigate={(p) => navigate(`/${p}`)}>
-      {page === "dashboard"
-        ? <Dashboard searchQuery={query} jobs={activeJobs} onAdd={addJob} onDelete={deleteJob} onMoveTo={moveTo} onEdit={editJob} />
+      {page === "dashboard" ? <Dashboard searchQuery={query} jobs={activeJobs} onAdd={addJob} onDelete={deleteJob} onMoveTo={moveTo} onEdit={editJob} />
+        : page === "resume" ? <ResumePage jobs={jobs} />
         : <ArchivePage jobs={archivedJobs} onRestore={restoreJob} />}
     </AppShell>
   );
@@ -56,7 +57,7 @@ function MockLayout() {
 function MainLayout() {
   const navigate    = useNavigate();
   const location    = useLocation();
-  const page        = location.pathname === "/archive" ? "archive" : "dashboard";
+  const page        = location.pathname === "/archive" ? "archive" : location.pathname === "/resume" ? "resume" : "dashboard";
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const [query, setQuery] = useState("");
@@ -75,8 +76,8 @@ function MainLayout() {
 
   return (
     <AppShell searchValue={query} onSearchChange={setQuery} currentPage={page} onNavigate={(p) => navigate(`/${p}`)}>
-      {page === "dashboard"
-        ? <Dashboard searchQuery={query} jobs={activeJobs} onAdd={(j) => addJobMutation.mutate(j)} onDelete={(id) => deleteJobMutation.mutate(id)} onMoveTo={(id, status) => moveMutation.mutate({ id, status })} onEdit={(j) => editMutation.mutate(j)} />
+      {page === "dashboard" ? <Dashboard searchQuery={query} jobs={activeJobs} onAdd={(j) => addJobMutation.mutate(j)} onDelete={(id) => deleteJobMutation.mutate(id)} onMoveTo={(id, status) => moveMutation.mutate({ id, status })} onEdit={(j) => editMutation.mutate(j)} />
+        : page === "resume" ? <ResumePage jobs={jobs} />
         : <ArchivePage jobs={archivedJobs} onRestore={(id) => restoreMutation.mutate(id)} />}
     </AppShell>
   );
@@ -90,6 +91,7 @@ export default function App() {
       <Route path="/register"  element={<GuestRoute><RegisterPage /></GuestRoute>} />
       <Route path="/dashboard" element={<PrivateRoute><Layout /></PrivateRoute>} />
       <Route path="/archive"   element={<PrivateRoute><Layout /></PrivateRoute>} />
+      <Route path="/resume"    element={<PrivateRoute><Layout /></PrivateRoute>} />
       <Route path="*"          element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
